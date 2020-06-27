@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
-import 'model/gallery_model.dart';
 import 'common/global.dart';
 import 'generated/i18n.dart';
+import 'model/gallery_model.dart';
 import 'views/gallery.dart';
 import 'views/login.dart';
 
@@ -30,6 +28,7 @@ class _MyAppState extends State<MyApp> {
   final GeneratedLocalizationsDelegate i18n = I18n.delegate;
   var _materialLocale;
   bool _loadEnd = false;
+
   @override
   void initState() {
     super.initState();
@@ -53,7 +52,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onLocaleChange(Locale locale) async {
-    Global.prefs.setString('i18n', locale.toLanguageTag());
+    await Global.prefs.setString('i18n', locale?.toLanguageTag());
     setState(() {
       I18n.locale = locale;
       _materialLocale = locale;
@@ -72,7 +71,7 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: i18n.supportedLocales,
       localeResolutionCallback: i18n.resolution(),
       debugShowCheckedModeBanner: false,
-      // locale: _materialLocale,
+      locale: _materialLocale,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         snackBarTheme: SnackBarThemeData(

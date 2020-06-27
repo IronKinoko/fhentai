@@ -1,8 +1,8 @@
 import 'package:fhentai/apis/gallery.dart';
 import 'package:fhentai/generated/i18n.dart';
-import 'package:flutter/material.dart';
 import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/widget/index.dart';
+import 'package:flutter/material.dart';
 
 class Gallery extends StatefulWidget {
   @override

@@ -1,5 +1,5 @@
-import 'package:html/parser.dart';
 import 'package:fhentai/model/gallery_model.dart';
+import 'package:html/parser.dart';
 
 ResponseGalerry parseGalleryList(String html) {
   var document = HtmlParser(html, encoding: 'utf-8').parse();

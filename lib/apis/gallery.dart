@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_model.dart';
+
 import './parser/gallery_parser.dart';
 
 Future<ResponseGalerry> galleryList({int page, String fSearch = ''}) async {

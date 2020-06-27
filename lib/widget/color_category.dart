@@ -26,7 +26,7 @@ class ColorCategory extends StatelessWidget {
       case 'Western':
         color = Color(0xFFAB9F60);
         break;
-      case 'Non H':
+      case 'Non-H':
         color = Color(0xFF5FA9CF);
         break;
       case 'Image Set':

@@ -6,7 +6,12 @@ import 'package:fhentai/views/settings/settings_eh_tags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class SettingsEh extends StatelessWidget {
+class SettingsEh extends StatefulWidget {
+  @override
+  _SettingsEhState createState() => _SettingsEhState();
+}
+
+class _SettingsEhState extends State<SettingsEh> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,6 +117,9 @@ class SettingsEh extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.explicit),
               title: Text(I18n.of(context).EHEhentai_Switch),
+              subtitle: Text(Global.prefs.getString('domain') == Global.ehUri
+                  ? 'e-hentai.org'
+                  : 'exhentai.org'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -178,6 +186,7 @@ class SettingsEh extends StatelessWidget {
                           onPressed: () {
                             Navigator.pop(context);
                             Global.prefs.setString('domain', _domain);
+                            setState(() {});
                           },
                         )
                       ],

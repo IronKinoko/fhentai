@@ -58,6 +58,8 @@ class I18n implements WidgetsLocalizations {
   String get Advanced => "高级设置";
   /// "语言"
   String get Language => "语言";
+  /// "跟随系统"
+  String get FollowSystem => "跟随系统";
   /// "在 Ehentai 中打开"
   String get OpenEH => "在 Ehentai 中打开";
   /// "关于"
@@ -237,6 +239,9 @@ class _I18n_en_US extends I18n {
   /// "Language"
   @override
   String get Language => "Language";
+  /// "System"
+  @override
+  String get FollowSystem => "System";
   /// "Open in EHentai"
   @override
   String get OpenEH => "Open in EHentai";

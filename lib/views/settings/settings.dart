@@ -1,6 +1,6 @@
 import 'package:fhentai/generated/i18n.dart';
+import 'package:fhentai/views/settings/settings_advanced.dart';
 import 'package:fhentai/views/settings/settings_eh.dart';
-import 'package:fhentai/widget/index.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatelessWidget {
@@ -14,7 +14,7 @@ class Settings extends StatelessWidget {
           child: ListView(
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.account_circle),
+                leading: Icon(Icons.explicit),
                 title: Text('EH'),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
@@ -27,6 +27,9 @@ class Settings extends StatelessWidget {
                 leading: Icon(Icons.settings),
                 title: Text(I18n.of(context).Advanced),
                 trailing: Icon(Icons.arrow_right),
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => SettingsAdvanced(),
+                )),
               ),
               ListTile(
                 leading: Icon(Icons.info),
