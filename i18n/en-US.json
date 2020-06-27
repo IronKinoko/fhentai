@@ -1,0 +1,101 @@
+{
+  "Front_Page": "Front Page",
+  "Watched": "Watched",
+  "Popular": "Popular",
+  "Favorites": "Favorites",
+  "Histories": "Histories",
+  "Setting": "Setting",
+  "Copy": "Copy",
+  "Cancel": "Cancel",
+  "More": "More",
+  "Loading": "Loading",
+  "Reach_End": "Reach End",
+  "Advanced": "Advanced",
+  "Language": "Language",
+  "OpenEH": "Open in EHentai",
+  "About": {
+    "": "About",
+    "Author": "Author",
+    "Source": "Source",
+    "License": "License",
+    "Version": "Version",
+    "EhentaiViewDesc": "EhentaiView is not affiliated with E-hentai.org in any way"
+  },
+  "Theme": {
+    "": "Theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "Sign_In": {
+    "": "Sign In",
+    "welcome": "Welcome FHentai",
+    "Email": "Email",
+    "Cookie": "Use Cookie",
+    "Email_Address": "Email Address",
+    "Password": "Password",
+    "NO_Sign_In": "Tourist Mode",
+    "empty": "Please enter some text",
+    "visitor": "Visitor"
+  },
+  "G": {
+    "No_Comments": "no comments",
+    "Comments": "Comments",
+    "No_Tags": "No tags have been added for this gallery yet",
+    "Torrent": {
+      "Added": "Added",
+      "Size": "Size",
+      "Tsize": "Torrent size"
+    },
+    "Favorite": {
+      "Add": "Add to Favorites"
+    },
+    "Gallery_Info": {
+      "": "Gallery Info",
+      "Key": "Key",
+      "Value": "Value",
+      "gid": "gid",
+      "token": "token",
+      "title": "Title",
+      "title_jpn": "Title jpn",
+      "category": "Category",
+      "thumb": "Thumb",
+      "uploader": "Uploader",
+      "posted": "Posted",
+      "filecount": "Length",
+      "filesize": "Filesize",
+      "rating": "Rating",
+      "time": "Posted",
+      "url": "URL",
+      "rating_count": "Rating count",
+      "favcount": "Favcount",
+      "favoritelink": "Favoritelink"
+    }
+  },
+  "EH": {
+    "User": "User",
+    "Logout": {
+      "": "Logout",
+      "Content": "Are you sure?"
+    },
+    "User_Cookie": "User Cookie",
+    "Setting": "Setting",
+    "Ehentai_Switch": "Gallery Switch",
+    "Ehentai_Setting": "Ehentai Setting",
+    "Ehentai_Tags": "Ehentai Tags",
+    "KEEP_IT_SAFE": "KEEP IT SAFE"
+  },
+  "Search": {
+    "": "Search",
+    "Short": "The search string is too short, and was ignored.",
+    "Not_found": "No this found"
+  },
+  "Download": {
+    "": "Download",
+    "Progress": "Download Progress",
+    "Error_Info": "Error Info",
+    "Done": "Done",
+    "Buffer": "Buffer",
+    "Total": "Total",
+    "Save_Local": "Save Local"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "Front_Page": "首页",
+  "Watched": "订阅",
+  "Popular": "热门",
+  "Favorites": "收藏",
+  "Histories": "历史",
+  "Setting": "设置",
+  "Copy": "复制",
+  "Cancel": "取消",
+  "More": "查看更多",
+  "Loading": "加载中",
+  "Reach_End": "到底了",
+  "Advanced": "高级设置",
+  "Language": "语言",
+  "OpenEH": "在 Ehentai 中打开",
+  "About": {
+    "": "关于",
+    "Author": "作者",
+    "Source": "源代码",
+    "License": "开源证书",
+    "Version": "版本",
+    "EhentaiViewDesc": "EhentaiView 是 E-hentai.org 的非官方项目"
+  },
+  "Theme": {
+    "": "主题",
+    "light": "亮色",
+    "dark": "暗色"
+  },
+  "Sign_In": {
+    "": "登录",
+    "welcome": "欢迎使用 FHentai",
+    "Email": "邮箱",
+    "Cookie": "使用 Cookie 登录",
+    "Email_Address": "帐号",
+    "Password": "密码",
+    "NO_Sign_In": "游客模式",
+    "empty": "不能为空",
+    "visitor": "游客"
+  },
+  "G": {
+    "No_Comments": "暂无评论",
+    "Comments": "评论列表",
+    "No_Tags": "暂无标签",
+    "Torrent": {
+      "Added": "上传时间",
+      "Size": "大小",
+      "Tsize": "Torrent 大小"
+    },
+    "Favorite": {
+      "Add": "添加收藏"
+    },
+    "Gallery_Info": {
+      "": "画廊信息",
+      "Key": "键",
+      "Value": "值",
+      "gid": "gid",
+      "token": "token",
+      "title": "标题",
+      "title_jpn": "日文标题",
+      "category": "分类",
+      "thumb": "缩略图",
+      "uploader": "上传者",
+      "posted": "上传时间",
+      "filecount": "页数",
+      "filesize": "大小",
+      "rating": "评价",
+      "time": "上传时间",
+      "url": "链接",
+      "rating_count": "评价次数",
+      "favcount": "收藏次数",
+      "favoritelink": "收藏夹"
+    }
+  },
+  "EH": {
+    "User": "用户",
+    "Logout": {
+      "": "登出",
+      "Content": "确定退出？"
+    },
+    "User_Cookie": "用户Cookie",
+    "Setting": "设置",
+    "Ehentai_Switch": "画廊切换",
+    "Ehentai_Setting": "Ehentai 设置",
+    "Ehentai_Tags": "EHentai 标签管理",
+    "KEEP_IT_SAFE": "注意信息安全"
+  },
+  "Search": {
+    "": "搜索",
+    "Short": "输入内容不能少于2字符",
+    "Not_found": "什么都没找到"
+  },
+  "Download": {
+    "": "下载",
+    "Progress": "下载进度",
+    "Error_Info": "错误信息",
+    "Done": "完成",
+    "Buffer": "缓冲区",
+    "Total": "总数",
+    "Save_Local": "保存到本地"
+  }
+}
