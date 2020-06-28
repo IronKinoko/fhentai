@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -67,13 +68,16 @@ class _MyAppState extends State<MyApp> {
         i18n,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate
       ],
       supportedLocales: i18n.supportedLocales,
       localeResolutionCallback: i18n.resolution(),
       debugShowCheckedModeBanner: false,
       locale: _materialLocale,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme:
+          ThemeData.from(colorScheme: ColorScheme.light(primary: Colors.blue))
+              .copyWith(
         snackBarTheme: SnackBarThemeData(
           elevation: 8,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -81,18 +85,17 @@ class _MyAppState extends State<MyApp> {
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Container(
-        child: _loadEnd
-            ? Global.isSignin == null ? Login() : Gallery()
-            : Center(
-                child: Column(
+      home: _loadEnd
+          ? Global.isSignin == null ? Login() : Gallery()
+          : Container(
+              child: Center(
+                  child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   CircularProgressIndicator(),
                 ],
               )),
-        color: Colors.white,
-      ),
+            ),
     );
   }
 }

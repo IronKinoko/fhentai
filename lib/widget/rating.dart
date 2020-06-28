@@ -12,7 +12,7 @@ class Rating extends StatelessWidget {
     return Icon(
       icon,
       color: Color(0xfff9a825),
-      size: 18,
+      size: 16,
     );
   }
 

@@ -50,10 +50,10 @@ class ColorCategory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: getColor(),
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Text(
         category,
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white, fontSize: 14),
       ),
     );
   }

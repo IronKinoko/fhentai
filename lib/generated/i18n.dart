@@ -188,6 +188,8 @@ class I18n implements WidgetsLocalizations {
   String get DownloadTotal => "总数";
   /// "保存到本地"
   String get DownloadSave_Local => "保存到本地";
+  /// "网络不佳"
+  String get Error => "网络不佳";
 }
 
 class _I18n_zh_CN extends I18n {
@@ -434,6 +436,9 @@ class _I18n_en_US extends I18n {
   /// "Save Local"
   @override
   String get DownloadSave_Local => "Save Local";
+  /// "Loading Error"
+  @override
+  String get Error => "Loading Error";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

@@ -98,5 +98,6 @@
     "Buffer": "Buffer",
     "Total": "Total",
     "Save_Local": "Save Local"
-  }
+  },
+  "Error": "Loading Error"
 }

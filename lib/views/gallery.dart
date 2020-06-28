@@ -1,8 +1,11 @@
 import 'package:fhentai/apis/gallery.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/model/gallery_model.dart';
+// import 'package:fhentai/widget/floating_appbar.dart';
 import 'package:fhentai/widget/index.dart';
+import 'package:floating_search_bar/ui/sliver_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class Gallery extends StatefulWidget {
   @override
@@ -16,7 +19,8 @@ class _GalleryState extends State<Gallery> {
   bool _isEnd = false;
   bool _isPerformingRequest = false;
   bool _showFloating = false;
-  ScrollController _scrollController = ScrollController();
+  bool _error = false;
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -72,11 +76,17 @@ class _GalleryState extends State<Gallery> {
   }
 
   Future<void> _onRefresh() async {
-    var res = await galleryList(page: 0);
-    setState(() {
-      _dataSource = res.list;
-      _total = res.total;
-    });
+    try {
+      var res = await galleryList(page: 0);
+      setState(() {
+        _dataSource = res.list;
+        _total = res.total;
+      });
+    } catch (e) {
+      setState(() {
+        _error = true;
+      });
+    }
   }
 
   Widget _buildProgressIndicator() {
@@ -93,29 +103,88 @@ class _GalleryState extends State<Gallery> {
     );
   }
 
+  Widget _buildError(BuildContext context) {
+    return SliverGrid.count(
+      crossAxisCount: 1,
+      children: <Widget>[
+        Container(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.error,
+                  size: 80,
+                  color: Colors.red[700],
+                ),
+                SizedBox(height: 8),
+                Text(
+                  I18n.of(context).Error,
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                SizedBox(height: 8),
+                FlatButton(
+                    textColor: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.primary,
+                    onPressed: () {},
+                    child: Text(
+                      MaterialLocalizations.of(context)
+                          .refreshIndicatorSemanticLabel,
+                    )),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(I18n.of(context).Front_Page),
-      ),
-      body: Container(
-        child: _dataSource == null
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : RefreshIndicator(
-                onRefresh: _onRefresh,
-                child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: _dataSource.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == _dataSource.length) {
-                        return _buildProgressIndicator();
-                      }
-                      return GalleryCard(_dataSource[index]);
-                    }),
-              ),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverFloatingBar(
+              elevation: 16,
+              title: TextField(
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      hintText: I18n.of(context).Front_Page)),
+              floating: true,
+              snap: true,
+            ),
+            SliverPadding(
+              padding: EdgeInsets.only(top: 16),
+            ),
+            _dataSource == null
+                ? SliverGrid.count(
+                    crossAxisCount: 1,
+                    children: <Widget>[
+                      Container(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    ],
+                  )
+                : _error == false
+                    ? _buildError(context)
+                    : SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          if (index == _dataSource.length) {
+                            return _buildProgressIndicator();
+                          }
+                          return GalleryCard(_dataSource[index]);
+                        },
+                        childCount: _dataSource.length + 1,
+                      ))
+          ],
+        ),
       ),
       drawer: MenuDraw(
         current: I18n.of(context).Front_Page,

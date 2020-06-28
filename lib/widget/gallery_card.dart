@@ -14,29 +14,37 @@ class GalleryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double _height = 120;
+    const double _weight = 90;
+
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: InkWell(
-        onTap: () {},
-        child: Container(
+      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: Material(
+        child: InkWell(
+          onTap: () {},
           child: Row(
             children: <Widget>[
               CachedNetworkImage(
                 httpHeaders: {'Cookie': Global.currentCookieStr},
                 imageUrl: record.thumb,
                 placeholder: (context, url) => Container(
-                  width: 100,
-                  height: 150,
+                  width: _weight,
+                  height: _height,
                   child: Center(child: CircularProgressIndicator()),
                 ),
+                imageBuilder: (context, imageProvider) {
+                  return Ink.image(
+                    image: imageProvider,
+                    width: _weight,
+                    height: _height,
+                  );
+                },
                 errorWidget: (context, url, error) => Icon(Icons.error),
-                width: 100,
-                height: 150,
-                fit: BoxFit.cover,
+                fit: BoxFit.fitWidth,
               ),
               Expanded(
                 child: Container(
-                  height: 150,
+                  height: _height,
                   padding: EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,12 +53,16 @@ class GalleryCard extends StatelessWidget {
                         record.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 14),
                       ),
-                      SizedBox(
-                        height: 8,
+                      // SizedBox(
+                      //   height: 8,
+                      // ),
+                      Text(
+                        record.uploader,
+                        style:
+                            TextStyle(color: Color(0xff666666), fontSize: 14),
                       ),
-                      Text(record.uploader),
                       Spacer(),
                       Column(
                         children: <Widget>[
@@ -60,19 +72,27 @@ class GalleryCard extends StatelessWidget {
                               Spacer(),
                               Row(
                                 children: <Widget>[
-                                  Text('${record.filecount}P')
+                                  Text(
+                                    '${record.filecount}P',
+                                    style: TextStyle(
+                                        color: Color(0xff666666), fontSize: 14),
+                                  )
                                 ],
                               )
                             ],
                           ),
-                          SizedBox(
-                            height: 8,
-                          ),
+                          // SizedBox(
+                          //   height: 4,
+                          // ),
                           Row(
                             children: <Widget>[
                               ColorCategory(record.category),
                               Spacer(),
-                              Text('${record.time}')
+                              Text(
+                                '${record.time}',
+                                style: TextStyle(
+                                    color: Color(0xff666666), fontSize: 14),
+                              )
                             ],
                           )
                         ],
