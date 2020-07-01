@@ -25,6 +25,7 @@ class SettingsEhTags extends StatelessWidget {
             icon: Icon(Icons.save),
             onPressed: () {
               Global.dio.get(Global.prefs.getString('domain') + '/mytags');
+              Navigator.pop(context);
             },
           )
         ],

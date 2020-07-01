@@ -46,6 +46,8 @@ class I18n implements WidgetsLocalizations {
   String get Setting => "设置";
   /// "复制"
   String get Copy => "复制";
+  /// "已复制"
+  String get Copyied => "已复制";
   /// "取消"
   String get Cancel => "取消";
   /// "查看更多"
@@ -190,6 +192,8 @@ class I18n implements WidgetsLocalizations {
   String get DownloadSave_Local => "保存到本地";
   /// "网络不佳"
   String get Error => "网络不佳";
+  /// "阅读"
+  String get Read => "阅读";
 }
 
 class _I18n_zh_CN extends I18n {
@@ -223,6 +227,9 @@ class _I18n_en_US extends I18n {
   /// "Copy"
   @override
   String get Copy => "Copy";
+  /// "Copyied"
+  @override
+  String get Copyied => "Copyied";
   /// "Cancel"
   @override
   String get Cancel => "Cancel";
@@ -439,6 +446,9 @@ class _I18n_en_US extends I18n {
   /// "Loading Error"
   @override
   String get Error => "Loading Error";
+  /// "Read"
+  @override
+  String get Read => "Read";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

@@ -6,6 +6,7 @@
   "Histories": "Histories",
   "Setting": "Setting",
   "Copy": "Copy",
+  "Copyied": "Copyied",
   "Cancel": "Cancel",
   "More": "More",
   "Loading": "Loading",
@@ -99,5 +100,6 @@
     "Total": "Total",
     "Save_Local": "Save Local"
   },
-  "Error": "Loading Error"
+  "Error": "Loading Error",
+  "Read": "Read"
 }

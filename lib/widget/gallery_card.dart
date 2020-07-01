@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_model.dart';
+import 'package:fhentai/views/gallery_detail.dart';
 import 'package:fhentai/widget/index.dart';
 import 'package:flutter/material.dart';
 
@@ -21,26 +22,36 @@ class GalleryCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Material(
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => GalleryDetail(record),
+            ));
+          },
           child: Row(
             children: <Widget>[
-              CachedNetworkImage(
-                httpHeaders: {'Cookie': Global.currentCookieStr},
-                imageUrl: record.thumb,
-                placeholder: (context, url) => Container(
-                  width: _weight,
-                  height: _height,
-                  child: Center(child: CircularProgressIndicator()),
+              Hero(
+                tag: record.gid,
+                child: Material(
+                  child: CachedNetworkImage(
+                    httpHeaders: {'Cookie': Global.currentCookieStr},
+                    imageUrl: record.thumb,
+                    placeholder: (context, url) => Container(
+                      width: _weight,
+                      height: _height,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    imageBuilder: (context, imageProvider) {
+                      return Ink.image(
+                        image: imageProvider,
+                        width: _weight,
+                        height: _height,
+                        fit: BoxFit.fitWidth,
+                      );
+                    },
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
-                imageBuilder: (context, imageProvider) {
-                  return Ink.image(
-                    image: imageProvider,
-                    width: _weight,
-                    height: _height,
-                  );
-                },
-                errorWidget: (context, url, error) => Icon(Icons.error),
-                fit: BoxFit.fitWidth,
               ),
               Expanded(
                 child: Container(

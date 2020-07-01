@@ -28,6 +28,7 @@ class SettingsEhSettings extends StatelessWidget {
             icon: Icon(Icons.save),
             onPressed: () {
               Global.dio.get(Global.prefs.getString('domain') + '/uconfig.php');
+              Navigator.pop(context);
             },
           )
         ],

@@ -103,6 +103,19 @@ class _GalleryState extends State<Gallery> {
     );
   }
 
+  Widget _buildFirstLoading(BuildContext context) {
+    return SliverGrid.count(
+      crossAxisCount: 1,
+      children: <Widget>[
+        Container(
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        )
+      ],
+    );
+  }
+
   Widget _buildError(BuildContext context) {
     return SliverGrid.count(
       crossAxisCount: 1,
@@ -115,7 +128,7 @@ class _GalleryState extends State<Gallery> {
                 Icon(
                   Icons.error,
                   size: 80,
-                  color: Colors.red[700],
+                  color: Theme.of(context).colorScheme.error,
                 ),
                 SizedBox(height: 8),
                 Text(
@@ -126,7 +139,18 @@ class _GalleryState extends State<Gallery> {
                 FlatButton(
                     textColor: Theme.of(context).colorScheme.onPrimary,
                     color: Theme.of(context).colorScheme.primary,
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        _dataSource = null;
+                        _total = 0;
+                        _page = 0;
+                        _isEnd = false;
+                        _isPerformingRequest = false;
+                        _showFloating = false;
+                        _error = false;
+                        _loadPage(_page);
+                      });
+                    },
                     child: Text(
                       MaterialLocalizations.of(context)
                           .refreshIndicatorSemanticLabel,
@@ -161,17 +185,8 @@ class _GalleryState extends State<Gallery> {
               padding: EdgeInsets.only(top: 16),
             ),
             _dataSource == null
-                ? SliverGrid.count(
-                    crossAxisCount: 1,
-                    children: <Widget>[
-                      Container(
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    ],
-                  )
-                : _error == false
+                ? _buildFirstLoading(context)
+                : _error
                     ? _buildError(context)
                     : SliverList(
                         delegate: SliverChildBuilderDelegate(

@@ -6,6 +6,7 @@
   "Histories": "历史",
   "Setting": "设置",
   "Copy": "复制",
+  "Copyied": "已复制",
   "Cancel": "取消",
   "More": "查看更多",
   "Loading": "加载中",
@@ -99,5 +100,6 @@
     "Total": "总数",
     "Save_Local": "保存到本地"
   },
-  "Error": "网络不佳"
+  "Error": "网络不佳",
+  "Read": "阅读"
 }
