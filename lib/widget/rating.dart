@@ -18,7 +18,7 @@ class Rating extends StatelessWidget {
 
   Widget buildStar() {
     var full = (rating).floor();
-    var half = (rating - rating.floor()) == 0.5;
+    var half = (rating - rating.floor()) > 0 && (rating - rating.floor()) < 1;
     List<Widget> list = [];
 
     for (var i = 0; i < full; i++) {
@@ -31,6 +31,7 @@ class Rating extends StatelessWidget {
       list.add(_getIcon(Icons.star_border));
     }
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: list,
     );
   }

@@ -1,5 +1,24 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
+class GalleryDetailModel extends ChangeNotifier {
+  Map<String, GalleryDetailPageState> _galleryMap = {};
+
+  GalleryDetailPageState get(String gid) {
+    return _galleryMap[gid];
+  }
+
+  void add(String gid, GalleryDetailPageState state) {
+    _galleryMap[gid] = state;
+    notifyListeners();
+  }
+
+  void clear() {
+    _galleryMap.clear();
+  }
+}
+
 class GalleryDetailPageState {
   GalleryDetailPageState({
     this.info,
@@ -85,12 +104,13 @@ class Info {
     this.torrentcount,
     this.torrents,
     this.tags,
-    this.time,
     this.url,
     this.path,
     this.ratingCount,
     this.favcount,
     this.favoritelink,
+    this.error,
+    this.language,
   });
 
   int gid;
@@ -103,18 +123,19 @@ class Info {
   String uploader;
   String posted;
   String filecount;
-  String filesize;
+  int filesize;
   bool expunged;
   String rating;
   String torrentcount;
   List<Torrent> torrents;
   List<String> tags;
-  String time;
   String url;
   String path;
   String ratingCount;
   String favcount;
   String favoritelink;
+  String error;
+  String language;
 
   factory Info.fromRawJson(String str) => Info.fromJson(json.decode(str));
 
@@ -138,12 +159,12 @@ class Info {
         torrents: List<Torrent>.from(
             json["torrents"].map((x) => Torrent.fromJson(x))),
         tags: List<String>.from(json["tags"].map((x) => x)),
-        time: json["time"],
         url: json["url"],
         path: json["path"],
         ratingCount: json["rating_count"],
         favcount: json["favcount"],
         favoritelink: json["favoritelink"],
+        error: json['error'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -163,12 +184,12 @@ class Info {
         "torrentcount": torrentcount,
         "torrents": List<dynamic>.from(torrents.map((x) => x.toJson())),
         "tags": List<dynamic>.from(tags.map((x) => x)),
-        "time": time,
         "url": url,
         "path": path,
         "rating_count": ratingCount,
         "favcount": favcount,
         "favoritelink": favoritelink,
+        "error": error
       };
 }
 
@@ -312,4 +333,51 @@ class FrontMatter {
         "name_CHS": nameChs,
         "intro": intro,
       };
+}
+
+class GdataRes {
+  GdataRes({
+    this.gmetadata,
+  });
+
+  List<Info> gmetadata;
+
+  factory GdataRes.fromRawJson(String str) =>
+      GdataRes.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory GdataRes.fromJson(Map<String, dynamic> json) => GdataRes(
+        gmetadata:
+            List<Info>.from(json["gmetadata"].map((x) => Info.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "gmetadata": List<dynamic>.from(gmetadata.map((x) => x.toJson())),
+      };
+}
+
+class OtherInfo {
+  OtherInfo({
+    this.ratingCount,
+    this.favcount,
+    this.favoritelink,
+    this.language,
+  });
+
+  String ratingCount;
+  String favcount;
+  String favoritelink;
+  String language;
+
+  OtherInfo copyWith({
+    String ratingCount,
+    String favcount,
+    String favoritelink,
+  }) =>
+      OtherInfo(
+        ratingCount: ratingCount ?? this.ratingCount,
+        favcount: favcount ?? this.favcount,
+        favoritelink: favoritelink ?? this.favoritelink,
+      );
 }

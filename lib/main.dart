@@ -1,8 +1,10 @@
+import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'common/DB.dart';
 import 'common/global.dart';
 import 'generated/i18n.dart';
 import 'model/gallery_model.dart';
@@ -12,9 +14,13 @@ import 'views/login.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Global().init();
+  await DB().init();
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (ctx) => GalleryModel())],
+      providers: [
+        ChangeNotifierProvider(create: (ctx) => GalleryModel()),
+        ChangeNotifierProvider(create: (context) => GalleryDetailModel())
+      ],
       child: MyApp(),
     ),
   );

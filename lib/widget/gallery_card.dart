@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_model.dart';
-import 'package:fhentai/views/gallery_detail.dart';
+import 'package:fhentai/views/detail/gallery_detail.dart';
 import 'package:fhentai/widget/index.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +12,13 @@ class GalleryCard extends StatelessWidget {
     this.record, {
     Key key,
   }) : super(key: key);
+
+  String _buildLanguageString(String title) {
+    final chineseRe = RegExp(r'(\[Chinese\]|\[中国翻訳\])');
+
+    if (chineseRe.hasMatch(title)) return 'ZH';
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +90,12 @@ class GalleryCard extends StatelessWidget {
                               Spacer(),
                               Row(
                                 children: <Widget>[
+                                  Text(
+                                    _buildLanguageString(record.title),
+                                    style: TextStyle(
+                                        color: Color(0xff666666), fontSize: 14),
+                                  ),
+                                  SizedBox(width: 8),
                                   Text(
                                     '${record.filecount}P',
                                     style: TextStyle(

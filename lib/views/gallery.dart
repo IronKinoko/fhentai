@@ -7,7 +7,16 @@ import 'package:floating_search_bar/ui/sliver_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+enum GalleryMode {
+  FrontPage,
+  Watched,
+  Popular,
+}
+
 class Gallery extends StatefulWidget {
+  final String fSearch;
+  final GalleryMode mode;
+  Gallery({this.fSearch = '', this.mode = GalleryMode.FrontPage});
   @override
   _GalleryState createState() => _GalleryState();
 }
@@ -21,10 +30,12 @@ class _GalleryState extends State<Gallery> {
   bool _showFloating = false;
   bool _error = false;
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _textfieldcontroller = TextEditingController();
   @override
   void initState() {
     super.initState();
     _loadPage(_page);
+    _textfieldcontroller.value = TextEditingValue(text: widget.fSearch);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >
           _scrollController.position.maxScrollExtent - 600) {
@@ -48,51 +59,62 @@ class _GalleryState extends State<Gallery> {
     super.dispose();
   }
 
-  Future<void> _loadPage(int page, {String fSearch = ''}) async {
-    if (_isPerformingRequest || _isEnd) return;
-    setState(() {
-      _isPerformingRequest = true;
-    });
-    var res = await galleryList(page: page, fSearch: fSearch);
-    if (res.list.isEmpty) {
-      double edge = 50.0;
-      double offsetFromBottom = _scrollController.position.maxScrollExtent -
-          _scrollController.position.pixels;
-      if (offsetFromBottom < edge) {
-        _scrollController.animateTo(
-            _scrollController.offset - (edge - offsetFromBottom),
-            duration: new Duration(milliseconds: 500),
-            curve: Curves.easeOut);
-      }
-    }
-    if (mounted)
-      setState(() {
-        if (_dataSource != null && ++_page * 25 >= res.total) _isEnd = true;
-        _dataSource ??= [];
-        _dataSource.addAll(res.list);
-        _total = res.total;
-        _isPerformingRequest = false;
-      });
-  }
-
-  Future<void> _onRefresh() async {
+  Future<void> _loadPage(int page) async {
     try {
-      var res = await galleryList(page: 0);
+      if (_isPerformingRequest || (_isEnd && page != 0)) return;
       setState(() {
-        _dataSource = res.list;
-        _total = res.total;
+        _isPerformingRequest = true;
       });
+      ResponseGalerry res;
+      switch (widget.mode) {
+        case GalleryMode.FrontPage:
+          res = await galleryList(page: page, fSearch: widget.fSearch);
+          break;
+        case GalleryMode.Watched:
+          res = await watchedGalleryList(page: page, fSearch: widget.fSearch);
+          break;
+        case GalleryMode.Popular:
+          res = await popularGalleryList(page: page, fSearch: widget.fSearch);
+          break;
+        default:
+      }
+
+      if (mounted)
+        setState(() {
+          _page = page + 1;
+          if (widget.mode == GalleryMode.Popular) {
+            _isEnd = true;
+          } else {
+            if (_page * 25 >= res.total) _isEnd = true;
+          }
+          _dataSource ??= [];
+          if (page == 0) {
+            _dataSource = res.list;
+          } else {
+            _dataSource.addAll(res.list);
+          }
+          _total = res.total;
+          _isPerformingRequest = false;
+        });
     } catch (e) {
+      print(e);
       setState(() {
+        _isPerformingRequest = false;
+
         _error = true;
       });
     }
   }
 
+  Future<void> _onRefresh() async {
+    await _loadPage(0);
+  }
+
   Widget _buildProgressIndicator() {
-    return Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Center(
+    return SizedBox(
+      height: 80,
+      child: Align(
+        alignment: Alignment.topCenter,
         child: _isEnd
             ? Text(I18n.of(context).Reach_End)
             : Opacity(
@@ -163,6 +185,28 @@ class _GalleryState extends State<Gallery> {
     );
   }
 
+  Widget _buildEmpty() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(child: Text(I18n.of(context).SearchNot_found)),
+    );
+  }
+
+  String _buildHintText(BuildContext context) {
+    switch (widget.mode) {
+      case GalleryMode.FrontPage:
+        return I18n.of(context).Front_Page;
+        break;
+      case GalleryMode.Watched:
+        return I18n.of(context).Watched;
+        break;
+      case GalleryMode.Popular:
+        return I18n.of(context).Popular;
+        break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,24 +218,34 @@ class _GalleryState extends State<Gallery> {
             SliverFloatingBar(
               elevation: 16,
               title: TextField(
+                  onSubmitted: (value) => {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Gallery(fSearch: value)))
+                      },
+                  controller: _textfieldcontroller,
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
-                      hintText: I18n.of(context).Front_Page)),
+                      hintText: _buildHintText(context))),
               floating: true,
               snap: true,
             ),
             SliverPadding(
               padding: EdgeInsets.only(top: 16),
             ),
-            _dataSource == null
-                ? _buildFirstLoading(context)
-                : _error
-                    ? _buildError(context)
+            _error
+                ? _buildError(context)
+                : _dataSource == null
+                    ? _buildFirstLoading(context)
                     : SliverList(
                         delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           if (index == _dataSource.length) {
+                            if (index == 0) {
+                              return _buildEmpty();
+                            }
                             return _buildProgressIndicator();
                           }
                           return GalleryCard(_dataSource[index]);
@@ -202,7 +256,7 @@ class _GalleryState extends State<Gallery> {
         ),
       ),
       drawer: MenuDraw(
-        current: I18n.of(context).Front_Page,
+        current: _buildHintText(context),
       ),
       floatingActionButton: _showFloating
           ? FloatingActionButton(

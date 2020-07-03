@@ -68,7 +68,9 @@ class MenuDraw extends StatelessWidget {
               Navigator.of(context).pop();
               if (I18n.of(context).Front_Page == current) return;
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => Gallery(),
+                builder: (context) => Gallery(
+                  mode: GalleryMode.FrontPage,
+                ),
               ));
             },
           ),
@@ -79,7 +81,9 @@ class MenuDraw extends StatelessWidget {
               Navigator.of(context).pop();
               if (I18n.of(context).Watched == current) return;
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => Gallery(),
+                builder: (context) => Gallery(
+                  mode: GalleryMode.Watched,
+                ),
               ));
             },
           ),
@@ -90,7 +94,9 @@ class MenuDraw extends StatelessWidget {
               Navigator.of(context).pop();
               if (I18n.of(context).Popular == current) return;
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => Gallery(),
+                builder: (context) => Gallery(
+                  mode: GalleryMode.Popular,
+                ),
               ));
             },
           ),

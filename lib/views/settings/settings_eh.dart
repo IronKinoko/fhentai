@@ -1,10 +1,12 @@
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
+import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:fhentai/views/login.dart';
 import 'package:fhentai/views/settings/settings_eh_settings.dart';
 import 'package:fhentai/views/settings/settings_eh_tags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class SettingsEh extends StatefulWidget {
   @override
@@ -186,6 +188,9 @@ class _SettingsEhState extends State<SettingsEh> {
                           onPressed: () {
                             Navigator.pop(context);
                             Global.prefs.setString('domain', _domain);
+                            Provider.of<GalleryDetailModel>(context,
+                                    listen: false)
+                                .clear();
                             setState(() {});
                           },
                         )
