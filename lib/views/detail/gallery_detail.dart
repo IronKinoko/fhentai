@@ -9,6 +9,7 @@ import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/views/detail/gallery_torrent.dart';
 import 'package:fhentai/views/gallery.dart';
+import 'package:fhentai/widget/LoadImage.dart';
 import 'package:fhentai/widget/index.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,8 @@ class _GalleryDetailState extends State<GalleryDetail> {
     return Scaffold(
         key: _scaffold,
         body: SingleChildScrollView(
-          child: Container(
+          child: SafeArea(
+            top: false,
             child: Column(
               children: <Widget>[
                 _Header(widget: widget),
@@ -81,7 +83,6 @@ class _GalleryDetailState extends State<GalleryDetail> {
                           _buildGrid(context),
                         ],
                       )
-                // TODO List
               ],
             ),
           ),
@@ -96,13 +97,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
           child: Container(
             padding: EdgeInsets.all(8),
             child: AspectRatio(
-              aspectRatio: 21 / 29.7,
-              child: CachedNetworkImage(
-                imageUrl: page.thumb,
-                fit: BoxFit.fitWidth,
-                httpHeaders: {'Cookie': Global.currentCookieStr},
-              ),
-            ),
+                aspectRatio: 21 / 29.7, child: LoadImage(page.thumb)),
           ),
         );
       }).toList(),
@@ -122,7 +117,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
           return TableRow(children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 13, 16, 8),
-              child: Text(Global.prefs.getString('i18n') == 'zh-CN'
+              child: Text(Global.prefs.getString(PREFS_I18N) == 'zh-CN'
                   ? tag.namespaceChs
                   : tag.namespace),
             ),
@@ -134,7 +129,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
                 children: <Widget>[
                   ...tag.frontMatters.map((frontMatter) {
                     return TagChip(
-                      label: Text(Global.prefs.getString('i18n') == 'zh-CN'
+                      label: Text(Global.prefs.getString(PREFS_I18N) == 'zh-CN'
                           ? frontMatter.nameChs
                           : frontMatter.name),
                       onPressed: () {
@@ -148,7 +143,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
                       },
                       tooltip: frontMatter.intro != null &&
                               frontMatter.intro != '' &&
-                              Global.prefs.getString('i18n') == 'zh-CN'
+                              Global.prefs.getString(PREFS_I18N) == 'zh-CN'
                           ? frontMatter.intro
                           : null,
                     );
@@ -318,7 +313,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
             onPressed: () {
               Clipboard.setData(ClipboardData(
                   text:
-                      '${Global.prefs.getString('domain')}/g/${widget.record.gid}/${widget.record.token}'));
+                      '${Global.prefs.getString(PREFS_DOMAIN)}/g/${widget.record.gid}/${widget.record.token}'));
               _scaffold.currentState.removeCurrentSnackBar();
               _scaffold.currentState.showSnackBar(SnackBar(
                 content: Text(I18n.of(context).Copyied),

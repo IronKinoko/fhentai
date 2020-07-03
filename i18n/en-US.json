@@ -3,7 +3,10 @@
   "Watched": "Watched",
   "Popular": "Popular",
   "Favorites": "Favorites",
-  "Histories": "Histories",
+  "Histories": {
+    "": "Histories",
+    "MaxLength": "Histories Max Length"
+  },
   "Setting": "Setting",
   "Copy": "Copy",
   "Copyied": "Copyied",

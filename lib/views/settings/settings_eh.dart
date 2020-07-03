@@ -53,9 +53,9 @@ class _SettingsEhState extends State<SettingsEh> {
                                 ),
                                 onPressed: () {
                                   Global.cookieJar.deleteAll();
-                                  Global.prefs.remove('isSignin');
-                                  Global.prefs.remove('nickName');
-                                  Global.prefs.remove('email');
+                                  Global.prefs.remove(PREFS_ISSIGNIN);
+                                  Global.prefs.remove(PREFS_NICKNAME);
+                                  Global.prefs.remove(PREFS_EMAIL);
                                   Navigator.of(context).pushAndRemoveUntil(
                                       MaterialPageRoute(
                                         builder: (context) => Login(),
@@ -119,14 +119,15 @@ class _SettingsEhState extends State<SettingsEh> {
             ListTile(
               leading: Icon(Icons.explicit),
               title: Text(I18n.of(context).EHEhentai_Switch),
-              subtitle: Text(Global.prefs.getString('domain') == Global.ehUri
-                  ? 'e-hentai.org'
-                  : 'exhentai.org'),
+              subtitle: Text(
+                  Global.prefs.getString(PREFS_DOMAIN) == Global.ehUri
+                      ? 'e-hentai.org'
+                      : 'exhentai.org'),
               onTap: () {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    String _domain = Global.prefs.getString('domain');
+                    String _domain = Global.prefs.getString(PREFS_DOMAIN);
 
                     return AlertDialog(
                       title: Text(I18n.of(context).EHEhentai_Switch),
@@ -187,7 +188,7 @@ class _SettingsEhState extends State<SettingsEh> {
                               MaterialLocalizations.of(context).okButtonLabel),
                           onPressed: () {
                             Navigator.pop(context);
-                            Global.prefs.setString('domain', _domain);
+                            Global.prefs.setString(PREFS_DOMAIN, _domain);
                             Provider.of<GalleryDetailModel>(context,
                                     listen: false)
                                 .clear();

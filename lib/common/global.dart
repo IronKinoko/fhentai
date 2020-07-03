@@ -20,10 +20,10 @@ class Global {
   static String get currentCookieStr =>
       Global.currentCookie.map((e) => '${e.name}=${e.value}; ').join('');
 
-  static List<Cookie> get currentCookie =>
-      _cookieJar.loadForRequest(Uri.parse(Global.prefs.getString('domain')));
+  static List<Cookie> get currentCookie => _cookieJar
+      .loadForRequest(Uri.parse(Global.prefs.getString(PREFS_DOMAIN)));
 
-  static bool get isSignin => Global.prefs.getBool('isSignin');
+  static bool get isSignin => Global.prefs.getBool(PREFS_ISSIGNIN);
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     Directory tempDir = await getTemporaryDirectory();
@@ -38,15 +38,30 @@ class Global {
     ))
       ..interceptors.add(InterceptorsWrapper(
         onRequest: (RequestOptions options) {
-          options = options.merge(baseUrl: Global.prefs.getString('domain'));
+          options =
+              options.merge(baseUrl: Global.prefs.getString(PREFS_DOMAIN));
           return options;
         },
       ))
       ..interceptors.add(LogInterceptor(responseBody: false))
       ..interceptors.add(DioCookieManager.CookieManager(_cookieJar));
 
-    if (_prefs.getString('domain') == null) {
-      await _prefs.setString('domain', _ehUri);
+    if (_prefs.getString(PREFS_DOMAIN) == null) {
+      await _prefs.setString(PREFS_DOMAIN, _ehUri);
+    }
+    if (_prefs.getInt(PREFS_HISTORIES_MAX_LENGTH) == null) {
+      await _prefs.setInt(PREFS_HISTORIES_MAX_LENGTH, 50);
     }
   }
 }
+
+/// prefs key
+const String PREFS_I18N = 'i18n';
+const String PREFS_HISTORIES = 'histories';
+const String PREFS_HISTORIES_MAX_LENGTH = 'histories_max_length';
+const String PREFS_DOMAIN = 'domain';
+const String PREFS_ISSIGNIN = 'isSignin';
+const String PREFS_NICKNAME = 'nickName';
+const String PREFS_EMAIL = 'email';
+const String PREFS_HIS_EMAIL = 'his_email';
+const String PREFS_HIS_PASSWORD = 'his_password';

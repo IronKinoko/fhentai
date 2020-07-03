@@ -1,14 +1,20 @@
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
+import 'package:fhentai/model/gallery_model.dart';
 import 'package:flutter/material.dart';
 
-class SettingsAdvanced extends StatelessWidget {
+class SettingsAdvanced extends StatefulWidget {
+  @override
+  _SettingsAdvancedState createState() => _SettingsAdvancedState();
+}
+
+class _SettingsAdvancedState extends State<SettingsAdvanced> {
   /// language dialog
   void _showLanguageDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
-        String _value = Global.prefs.getString('i18n');
+        String _value = Global.prefs.getString(PREFS_I18N);
 
         return AlertDialog(
           title: Text(I18n.of(context).Language),
@@ -65,10 +71,31 @@ class SettingsAdvanced extends StatelessWidget {
   }
 
   String _currentLanguage(BuildContext context) {
-    String v = Global.prefs.getString('i18n');
+    String v = Global.prefs.getString(PREFS_I18N);
     if (v == 'zh-CN') return '简体中文';
     if (v == 'en-US') return 'English';
     return I18n.of(context).FollowSystem;
+  }
+
+  void _inputHistoriesMaxLength(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          String _value =
+              Global.prefs.getInt(PREFS_HISTORIES_MAX_LENGTH).toString();
+          return AlertDialog(
+              content: TextField(
+            autofocus: true,
+            controller: TextEditingController(text: _value),
+            onSubmitted: (value) async {
+              await Global.prefs
+                  .setInt(PREFS_HISTORIES_MAX_LENGTH, int.parse(value));
+              Navigator.pop(context);
+              ResponseGalerry.getFromHistories().clear();
+              setState(() {});
+            },
+          ));
+        });
   }
 
   @override
@@ -85,6 +112,13 @@ class SettingsAdvanced extends StatelessWidget {
               subtitle: Text(_currentLanguage(context)),
               leading: Icon(Icons.translate),
               onTap: () => _showLanguageDialog(context),
+            ),
+            ListTile(
+              title: Text(I18n.of(context).HistoriesMaxLength),
+              subtitle: Text(
+                  Global.prefs.getInt(PREFS_HISTORIES_MAX_LENGTH).toString()),
+              leading: Icon(Icons.history),
+              onTap: () => _inputHistoriesMaxLength(context),
             )
           ],
         ),

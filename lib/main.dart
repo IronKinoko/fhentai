@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'common/DB.dart';
 import 'common/global.dart';
 import 'generated/i18n.dart';
@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void loadConfig() async {
-    String value = Global.prefs.getString('i18n');
+    String value = Global.prefs.getString(PREFS_I18N);
 
     setState(() {
       if (value == 'zh-CN') {
@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onLocaleChange(Locale locale) async {
-    await Global.prefs.setString('i18n', locale?.toLanguageTag());
+    await Global.prefs.setString(PREFS_I18N, locale?.toLanguageTag());
     setState(() {
       I18n.locale = locale;
       _materialLocale = locale;

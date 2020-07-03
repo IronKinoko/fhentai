@@ -13,7 +13,7 @@ class SettingsEhTags extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () {
-              Global.dio.get(Global.prefs.getString('domain') + '/mytags');
+              Global.dio.get(Global.prefs.getString(PREFS_DOMAIN) + '/mytags');
               Navigator.pop(context);
             },
           )
@@ -21,7 +21,7 @@ class SettingsEhTags extends StatelessWidget {
       ),
       body: SafeArea(
         child: Container(
-          child: EhWebview(Global.prefs.getString('domain') + '/mytags'),
+          child: EhWebview(Global.prefs.getString(PREFS_DOMAIN) + '/mytags'),
         ),
       ),
     );

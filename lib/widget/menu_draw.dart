@@ -37,13 +37,13 @@ class MenuDraw extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          Global.prefs.getString('nickName') ??
+                          Global.prefs.getString(PREFS_NICKNAME) ??
                               I18n.of(context).Sign_InVisitor,
                           style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         ),
-                        if (Global.prefs.getString('email') != null)
-                          Text(Global.prefs.getString('email'),
+                        if (Global.prefs.getString(PREFS_EMAIL) != null)
+                          Text(Global.prefs.getString(PREFS_EMAIL),
                               style: TextStyle(color: Colors.white))
                       ],
                     ),
@@ -52,7 +52,7 @@ class MenuDraw extends StatelessWidget {
               ],
             ),
           ),
-          if (Global.prefs.getString('email') == null)
+          if (Global.prefs.getString(PREFS_EMAIL) == null)
             FlatButton(
               textTheme: ButtonTextTheme.primary,
               child: Text(I18n.of(context).Sign_In),
@@ -118,7 +118,7 @@ class MenuDraw extends StatelessWidget {
               Navigator.of(context).pop();
               if (I18n.of(context).Histories == current) return;
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => Gallery(),
+                builder: (context) => Gallery(mode: GalleryMode.Histories),
               ));
             },
           ),

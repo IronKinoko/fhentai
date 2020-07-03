@@ -42,6 +42,8 @@ class I18n implements WidgetsLocalizations {
   String get Favorites => "收藏";
   /// "历史"
   String get Histories => "历史";
+  /// "历史记录容量"
+  String get HistoriesMaxLength => "历史记录容量";
   /// "设置"
   String get Setting => "设置";
   /// "复制"
@@ -221,6 +223,9 @@ class _I18n_en_US extends I18n {
   /// "Histories"
   @override
   String get Histories => "Histories";
+  /// "Histories Max Length"
+  @override
+  String get HistoriesMaxLength => "Histories Max Length";
   /// "Setting"
   @override
   String get Setting => "Setting";

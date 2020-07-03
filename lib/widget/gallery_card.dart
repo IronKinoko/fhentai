@@ -30,6 +30,7 @@ class GalleryCard extends StatelessWidget {
       child: Material(
         child: InkWell(
           onTap: () {
+            ResponseGalerry.getFromHistories().pushToHistories(record);
             Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => GalleryDetail(record),
             ));
@@ -42,11 +43,16 @@ class GalleryCard extends StatelessWidget {
                   child: CachedNetworkImage(
                     httpHeaders: {'Cookie': Global.currentCookieStr},
                     imageUrl: record.thumb,
-                    placeholder: (context, url) => Container(
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        Container(
                       width: _weight,
                       height: _height,
-                      child: Center(child: CircularProgressIndicator()),
+                      child: Center(
+                          child: CircularProgressIndicator(
+                        value: progress.progress,
+                      )),
                     ),
+                    fit: BoxFit.fitWidth,
                     imageBuilder: (context, imageProvider) {
                       return Ink.image(
                         image: imageProvider,
@@ -55,8 +61,10 @@ class GalleryCard extends StatelessWidget {
                         fit: BoxFit.fitWidth,
                       );
                     },
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                    fit: BoxFit.fitWidth,
+                    errorWidget: (context, url, error) => Container(
+                        width: _weight,
+                        height: _height,
+                        child: Center(child: Icon(Icons.error))),
                   ),
                 ),
               ),

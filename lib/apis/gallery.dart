@@ -102,7 +102,7 @@ Future<List<Info>> _gdata(List<List<String>> gidlist) async {
       if (o.error != null)
         throw Exception('[404]Key missing, or incorrect key provided.');
       o.titleJpn = o.titleJpn != '' ? o.titleJpn : o.title;
-      o.url = '${Global.prefs.getString('domain')}/g/${o.gid}/${o.token}';
+      o.url = '${Global.prefs.getString(PREFS_DOMAIN)}/g/${o.gid}/${o.token}';
       o.path = '/${o.gid}/${o.token}';
       o.posted = DateFormat('yyyy-MM-dd HH:mm').format(
           DateTime.fromMillisecondsSinceEpoch(int.parse(o.posted) * 1000));

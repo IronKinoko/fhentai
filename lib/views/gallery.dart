@@ -1,4 +1,5 @@
 import 'package:fhentai/apis/gallery.dart';
+import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/model/gallery_model.dart';
 // import 'package:fhentai/widget/floating_appbar.dart';
@@ -7,11 +8,7 @@ import 'package:floating_search_bar/ui/sliver_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-enum GalleryMode {
-  FrontPage,
-  Watched,
-  Popular,
-}
+enum GalleryMode { FrontPage, Watched, Popular, Histories }
 
 class Gallery extends StatefulWidget {
   final String fSearch;
@@ -76,13 +73,17 @@ class _GalleryState extends State<Gallery> {
         case GalleryMode.Popular:
           res = await popularGalleryList(page: page, fSearch: widget.fSearch);
           break;
+        case GalleryMode.Histories:
+          res = ResponseGalerry.getFromHistories();
+          break;
         default:
       }
 
       if (mounted)
         setState(() {
           _page = page + 1;
-          if (widget.mode == GalleryMode.Popular) {
+          if (widget.mode == GalleryMode.Popular ||
+              widget.mode == GalleryMode.Histories) {
             _isEnd = true;
           } else {
             if (_page * 25 >= res.total) _isEnd = true;
@@ -203,7 +204,11 @@ class _GalleryState extends State<Gallery> {
       case GalleryMode.Popular:
         return I18n.of(context).Popular;
         break;
+      case GalleryMode.Histories:
+        return I18n.of(context).Histories;
+        break;
       default:
+        return '';
     }
   }
 

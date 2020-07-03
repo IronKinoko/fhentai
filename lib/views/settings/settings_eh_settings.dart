@@ -13,7 +13,8 @@ class SettingsEhSettings extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () {
-              Global.dio.get(Global.prefs.getString('domain') + '/uconfig.php');
+              Global.dio
+                  .get(Global.prefs.getString(PREFS_DOMAIN) + '/uconfig.php');
               Navigator.pop(context);
             },
           )
@@ -21,7 +22,8 @@ class SettingsEhSettings extends StatelessWidget {
       ),
       body: SafeArea(
         child: Container(
-          child: EhWebview(Global.prefs.getString('domain') + '/uconfig.php'),
+          child:
+              EhWebview(Global.prefs.getString(PREFS_DOMAIN) + '/uconfig.php'),
         ),
       ),
     );

@@ -1,13 +1,61 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:fhentai/common/global.dart';
 import 'package:flutter/material.dart';
 
 class ResponseGalerry {
-  final List<GalleryInfo> list;
-  final int total;
+  List<GalleryInfo> list;
+  int total;
+  bool isHistories = false;
 
-  ResponseGalerry(this.list, this.total);
+  ResponseGalerry(this.list, this.total, {this.isHistories});
+
+  factory ResponseGalerry.getFromHistories() {
+    List<String> jsonStrList;
+    jsonStrList = Global.prefs.getStringList(PREFS_HISTORIES) ?? [];
+
+    List<GalleryInfo> list = jsonStrList.map((jsonStr) {
+      return GalleryInfo.fromRawJson(jsonStr);
+    }).toList();
+    int total = list.length;
+
+    return ResponseGalerry(list, total, isHistories: true);
+  }
+
+  /// must use `ResponseGalerry.getfromHistories();`
+  void pushToHistories(GalleryInfo record) {
+    assert(isHistories, 'must use ResponseGalerry.getfromHistories()');
+    list.removeWhere((o) => o.gid == record.gid);
+    list.insert(0, record);
+    total = min(list.length, Global.prefs.getInt(PREFS_HISTORIES_MAX_LENGTH));
+    list = list.sublist(0, total);
+    List<String> jsonStrList = list.map((e) => e.toRawJson()).toList();
+    Global.prefs.setStringList(PREFS_HISTORIES, jsonStrList);
+  }
+
+  void clear() {
+    Global.prefs.setStringList(PREFS_HISTORIES, []);
+  }
 }
+// To parse this JSON data, do
+//
+//     final galleryInfo = galleryInfoFromJson(jsonString);
 
 class GalleryInfo {
+  GalleryInfo({
+    this.title,
+    this.category,
+    this.time,
+    this.rating,
+    this.url,
+    this.uploader,
+    this.filecount,
+    this.gid,
+    this.token,
+    this.thumb,
+  });
+
   final String title;
   final String category;
   final String time;
@@ -19,19 +67,36 @@ class GalleryInfo {
   final String token;
   final String thumb;
 
-  GalleryInfo({
-    this.title,
-    this.category,
-    this.time,
-    this.rating,
-    this.url,
-    this.uploader,
-    this.filecount,
-    @required this.gid,
-    @required this.token,
-    this.thumb,
-  })  : assert(gid != null),
-        assert(token != null);
+  factory GalleryInfo.fromRawJson(String str) =>
+      GalleryInfo.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory GalleryInfo.fromJson(Map<String, dynamic> json) => GalleryInfo(
+        title: json["title"],
+        category: json["category"],
+        time: json["time"],
+        rating: json["rating"].toDouble(),
+        url: json["url"],
+        uploader: json["uploader"],
+        filecount: json["filecount"],
+        gid: json["gid"],
+        token: json["token"],
+        thumb: json["thumb"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "title": title,
+        "category": category,
+        "time": time,
+        "rating": rating,
+        "url": url,
+        "uploader": uploader,
+        "filecount": filecount,
+        "gid": gid,
+        "token": token,
+        "thumb": thumb,
+      };
 }
 
 class GalleryModel extends ChangeNotifier {

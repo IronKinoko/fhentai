@@ -17,7 +17,7 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    Global.prefs.setString('domain', Global.ehUri);
+    Global.prefs.setString(PREFS_DOMAIN, Global.ehUri);
   }
 
   bool _showPassword = false;
@@ -48,11 +48,11 @@ class _LoginState extends State<Login> {
 
   Future<void> _goGallery(BuildContext context, bool login) async {
     if (!login) {
-      await Global.prefs.setString('domain', Global.ehUri);
-      await Global.prefs.setBool('isSignin', false);
+      await Global.prefs.setString(PREFS_DOMAIN, Global.ehUri);
+      await Global.prefs.setBool(PREFS_ISSIGNIN, false);
     } else {
-      await Global.prefs.setString('domain', Global.exUri);
-      await Global.prefs.setBool('isSignin', true);
+      await Global.prefs.setString(PREFS_DOMAIN, Global.exUri);
+      await Global.prefs.setBool(PREFS_ISSIGNIN, true);
     }
     Navigator.of(context)
         .pushReplacement(MaterialPageRoute(builder: (ctx) => Gallery()));
@@ -68,11 +68,11 @@ class _LoginState extends State<Login> {
       try {
         Global.cookieJar.deleteAll();
         String username = await login(_username, _password);
-        await Global.prefs.setString('nickName', username);
-        await Global.prefs.setString('email', _username);
+        await Global.prefs.setString(PREFS_NICKNAME, username);
+        await Global.prefs.setString(PREFS_EMAIL, _username);
 
-        await Global.prefs.setString('his_email', _username);
-        await Global.prefs.setString('his_password', _password);
+        await Global.prefs.setString(PREFS_HIS_EMAIL, _username);
+        await Global.prefs.setString(PREFS_HIS_PASSWORD, _password);
 
         Global.cookieJar.saveFromResponse(
             Uri.parse(Global.exUri),
@@ -127,7 +127,8 @@ class _LoginState extends State<Login> {
                         child: Column(
                           children: <Widget>[
                             TextFormField(
-                              initialValue: Global.prefs.getString('his_email'),
+                              initialValue:
+                                  Global.prefs.getString(PREFS_HIS_EMAIL),
                               keyboardType: TextInputType.text,
                               validator: _validator,
                               onSaved: (newValue) => _username = newValue,
@@ -140,7 +141,7 @@ class _LoginState extends State<Login> {
                             SizedBox(height: 36),
                             TextFormField(
                               initialValue:
-                                  Global.prefs.getString('his_password'),
+                                  Global.prefs.getString(PREFS_HIS_PASSWORD),
                               obscureText: !_showPassword,
                               validator: _validator,
                               onSaved: (newValue) => _password = newValue,
