@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:fhentai/common/global.dart';
+import 'package:fhentai/views/gallery.dart';
 import 'package:flutter/material.dart';
 
 class ResponseGalerry {
@@ -100,12 +101,11 @@ class GalleryInfo {
 }
 
 class GalleryModel extends ChangeNotifier {
-  List<GalleryInfo> _galleryList = [];
+  Map<GalleryMode, ResponseGalerry> _galleryCacheMap = {};
 
-  List<GalleryInfo> get galleryList => _galleryList;
+  ResponseGalerry getGalleryList(GalleryMode mode) => _galleryCacheMap[mode];
 
-  set galleryList(List<GalleryInfo> galleryList) {
-    _galleryList = galleryList;
-    notifyListeners();
+  void setGalleryList(GalleryMode mode, ResponseGalerry galleryList) {
+    _galleryCacheMap[mode] = galleryList;
   }
 }

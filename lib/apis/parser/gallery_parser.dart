@@ -214,7 +214,7 @@ List<String> _getKV(String str) {
 String _formatUTCtoLocal(String time) {
   Map monthMap = {
     'January': '1',
-    'Febuary': '2',
+    'February': '2',
     'March': '3',
     'April': '4',
     'May': '5',

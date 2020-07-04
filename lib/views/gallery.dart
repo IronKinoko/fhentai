@@ -2,23 +2,31 @@ import 'package:fhentai/apis/gallery.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/model/gallery_model.dart';
-// import 'package:fhentai/widget/floating_appbar.dart';
+import 'package:fhentai/views/search.dart';
+import 'package:fhentai/views/settings/settings.dart';
+import 'package:fhentai/widget/bottom_navigation.dart';
 import 'package:fhentai/widget/index.dart';
-import 'package:floating_search_bar/ui/sliver_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-enum GalleryMode { FrontPage, Watched, Popular, Histories }
+enum GalleryMode { FrontPage, Watched, Popular, Favorites, Histories }
 
-class Gallery extends StatefulWidget {
+class GalleryList extends StatefulWidget {
   final String fSearch;
   final GalleryMode mode;
-  Gallery({this.fSearch = '', this.mode = GalleryMode.FrontPage});
+  final bool isSearch;
+  GalleryList({
+    this.fSearch = '',
+    this.mode = GalleryMode.FrontPage,
+    this.isSearch = false,
+  });
   @override
-  _GalleryState createState() => _GalleryState();
+  _GalleryListState createState() => _GalleryListState();
 }
 
-class _GalleryState extends State<Gallery> {
+class _GalleryListState extends State<GalleryList> {
   List<GalleryInfo> _dataSource;
   int _total = 0;
   int _page = 0;
@@ -28,9 +36,12 @@ class _GalleryState extends State<Gallery> {
   bool _error = false;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textfieldcontroller = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarBrightness: Brightness.light));
     _loadPage(_page);
     _textfieldcontroller.value = TextEditingValue(text: widget.fSearch);
     _scrollController.addListener(() {
@@ -63,6 +74,20 @@ class _GalleryState extends State<Gallery> {
         _isPerformingRequest = true;
       });
       ResponseGalerry res;
+
+      /// 从缓存中直接拿去第一页数据
+      if (widget.mode != GalleryMode.Histories &&
+          page == 0 &&
+          _dataSource == null &&
+          !widget.isSearch) {
+        res = context.read<GalleryModel>().getGalleryList(widget.mode);
+        if (res != null && mounted) {
+          setState(() {
+            _dataSource = res.list;
+            _isPerformingRequest = false;
+          });
+        }
+      }
       switch (widget.mode) {
         case GalleryMode.FrontPage:
           res = await galleryList(page: page, fSearch: widget.fSearch);
@@ -79,7 +104,7 @@ class _GalleryState extends State<Gallery> {
         default:
       }
 
-      if (mounted)
+      if (mounted) {
         setState(() {
           _page = page + 1;
           if (widget.mode == GalleryMode.Popular ||
@@ -91,12 +116,15 @@ class _GalleryState extends State<Gallery> {
           _dataSource ??= [];
           if (page == 0) {
             _dataSource = res.list;
+            if (!widget.isSearch)
+              context.read<GalleryModel>().setGalleryList(widget.mode, res);
           } else {
             _dataSource.addAll(res.list);
           }
           _total = res.total;
           _isPerformingRequest = false;
         });
+      }
     } catch (e) {
       print(e);
       setState(() {
@@ -215,30 +243,47 @@ class _GalleryState extends State<Gallery> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       body: RefreshIndicator(
         onRefresh: _onRefresh,
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            SliverFloatingBar(
-              elevation: 16,
-              title: TextField(
-                  onSubmitted: (value) => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Gallery(fSearch: value)))
-                      },
-                  controller: _textfieldcontroller,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      hintText: _buildHintText(context))),
+            SliverAppBar(
+              title: Text(widget.fSearch != ''
+                  ? widget.fSearch
+                  : _buildHintText(context)),
               floating: true,
               snap: true,
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(widget.isSearch ? Icons.close : Icons.search),
+                  tooltip: MaterialLocalizations.of(context).searchFieldLabel,
+                  onPressed: () {
+                    showSearch(context: context, delegate: SearchPage());
+                  },
+                ),
+                widget.isSearch
+                    ? IconButton(
+                        icon: Icon(Icons.tune),
+                        onPressed: () {},
+                      )
+                    : IconButton(
+                        icon: ClipOval(child: Image.asset('images/panda.png')),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Settings(),
+                              ));
+                        },
+                      )
+              ],
             ),
-            SliverPadding(
-              padding: EdgeInsets.only(top: 16),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 4,
+              ),
             ),
             _error
                 ? _buildError(context)
@@ -260,9 +305,6 @@ class _GalleryState extends State<Gallery> {
           ],
         ),
       ),
-      drawer: MenuDraw(
-        current: _buildHintText(context),
-      ),
       floatingActionButton: _showFloating
           ? FloatingActionButton(
               onPressed: () {
@@ -272,6 +314,88 @@ class _GalleryState extends State<Gallery> {
               child: Icon(Icons.vertical_align_top),
             )
           : null,
+    );
+  }
+}
+
+class ZeroSizeAppBar extends StatelessWidget implements PreferredSizeWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        child: null,
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(0);
+}
+
+class Gallery extends StatefulWidget {
+  final String fSearch;
+  final GalleryMode mode;
+  Gallery({this.fSearch = '', this.mode = GalleryMode.FrontPage});
+  @override
+  _GalleryState createState() => _GalleryState();
+}
+
+class _GalleryState extends State<Gallery> {
+  GalleryMode _mode;
+  PageController _pageController;
+
+  List<Widget> widgetList = [];
+  @override
+  void initState() {
+    super.initState();
+    widgetList.addAll([
+      GalleryList(),
+      GalleryList(mode: GalleryMode.Watched),
+      GalleryList(mode: GalleryMode.Popular),
+      GalleryList(),
+      GalleryList(mode: GalleryMode.Histories)
+    ]);
+    _pageController =
+        PageController(initialPage: widget.mode.index, keepPage: true);
+    setState(() {
+      _mode = widget.mode;
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: ZeroSizeAppBar(),
+      body: Container(
+        child: PageView.builder(
+          controller: _pageController,
+          itemCount: 5,
+          itemBuilder: (context, index) {
+            return widgetList[index];
+          },
+          onPageChanged: (index) {
+            setState(() {
+              _mode = GalleryMode.values[index];
+            });
+          },
+        ),
+      ),
+      bottomNavigationBar: BNavigation(
+        _mode,
+        onChange: (index, mode) {
+          setState(() {
+            _mode = mode;
+            _pageController.jumpToPage(index);
+          });
+        },
+      ),
     );
   }
 }

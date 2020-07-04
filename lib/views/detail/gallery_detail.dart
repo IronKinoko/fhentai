@@ -1,21 +1,21 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/cus_icons.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:fhentai/model/gallery_model.dart';
+import 'package:fhentai/views/comic/comic_reader.dart';
 import 'package:fhentai/views/detail/gallery_torrent.dart';
 import 'package:fhentai/views/gallery.dart';
+import 'package:fhentai/views/search_result.dart';
 import 'package:fhentai/widget/LoadImage.dart';
 import 'package:fhentai/widget/index.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:fhentai/apis/gallery.dart';
 
 import 'gallery_comments.dart';
 import 'gallery_info_table.dart';
@@ -35,22 +35,14 @@ class _GalleryDetailState extends State<GalleryDetail> {
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  _init() async {
-    GalleryDetailPageState res =
-        Provider.of<GalleryDetailModel>(context, listen: false)
-            .get(widget.record.gid);
-    if (res == null) {
-      res = await galleryDetail(widget.record.gid, widget.record.token);
-      if (!mounted) return;
-      Provider.of<GalleryDetailModel>(context, listen: false)
-          .add(widget.record.gid, res);
-    }
-
-    setState(() {
-      store = res;
+    Future.microtask(() async {
+      GalleryDetailPageState res = await context
+          .read<GalleryDetailModel>()
+          .fetchGalleryDetail(widget.record.gid, widget.record.token);
+      if (mounted)
+        setState(() {
+          store = res;
+        });
     });
   }
 
@@ -63,7 +55,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
             top: false,
             child: Column(
               children: <Widget>[
-                _Header(widget: widget),
+                _Header(record: widget.record),
 
                 /// button list
                 _buildButtonList(context),
@@ -90,14 +82,44 @@ class _GalleryDetailState extends State<GalleryDetail> {
   }
 
   Widget _buildGrid(BuildContext context) {
+    int i = 0;
     return Wrap(
-      children: store.pages.map((page) {
+      children: store.pages.sublist(0, min(20, store.pages.length)).map((page) {
+        int k = i++;
         return FractionallySizedBox(
           widthFactor: 0.25,
           child: Container(
             padding: EdgeInsets.all(8),
             child: AspectRatio(
-                aspectRatio: 21 / 29.7, child: LoadImage(page.thumb)),
+              aspectRatio: 21 / 29.7,
+              child: Stack(
+                children: [
+                  Hero(
+                    tag: page.thumb,
+                    child: Material(child: LoadImage(page.thumb)),
+                  ),
+                  Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return ComicReader(
+                                  gid: widget.record.gid,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }).toList(),
@@ -136,7 +158,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Gallery(
+                              builder: (context) => SearchResult(
                                 fSearch: frontMatter.keyword,
                               ),
                             ));
@@ -272,12 +294,8 @@ class _GalleryDetailState extends State<GalleryDetail> {
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Row(
         children: <Widget>[
-          IconButton(
-            icon:
-                Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+          BackButton(
             color: Theme.of(context).colorScheme.primary,
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => Navigator.pop(context),
           ),
           IconButton(
             icon: Icon(Icons.cloud_download),
@@ -303,7 +321,9 @@ class _GalleryDetailState extends State<GalleryDetail> {
                 ? Icons.favorite
                 : Icons.favorite_border),
             color: Theme.of(context).colorScheme.primary,
-            tooltip: 'Torrent' + I18n.of(context).Download,
+            tooltip: store != null && store.info.favoritelink != ''
+                ? store.info.favoritelink
+                : I18n.of(context).GFavoriteAdd,
             onPressed: store != null ? () {} : null,
           ),
           IconButton(
@@ -356,10 +376,10 @@ class _Header extends StatelessWidget {
 
   const _Header({
     Key key,
-    @required this.widget,
+    @required this.record,
   }) : super(key: key);
 
-  final GalleryDetail widget;
+  final GalleryInfo record;
 
   @override
   Widget build(BuildContext context) {
@@ -375,14 +395,13 @@ class _Header extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Hero(
-                  tag: widget.record.gid,
+                  tag: record.gid,
                   child: Material(
                     color: Theme.of(context).colorScheme.primary,
-                    child: CachedNetworkImage(
-                      imageUrl: widget.record.thumb,
+                    child: LoadImage(
+                      record.thumb,
                       width: width,
                       height: width * 1.4,
-                      fit: BoxFit.fitWidth,
                     ),
                   ),
                 ),
@@ -394,7 +413,7 @@ class _Header extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        widget.record.title,
+                        record.title,
                         maxLines: 4,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.headline6.copyWith(
@@ -402,12 +421,12 @@ class _Header extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        widget.record.uploader,
+                        record.uploader,
                         style: Theme.of(context).textTheme.subtitle1.copyWith(
                             color: Theme.of(context).colorScheme.onPrimary),
                       ),
                       Spacer(),
-                      ColorCategory(widget.record.category)
+                      ColorCategory(record.category)
                     ],
                   ),
                 ),

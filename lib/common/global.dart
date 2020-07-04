@@ -46,11 +46,28 @@ class Global {
       ..interceptors.add(LogInterceptor(responseBody: false))
       ..interceptors.add(DioCookieManager.CookieManager(_cookieJar));
 
+    /// 初始化访问 e-hentai.org
     if (_prefs.getString(PREFS_DOMAIN) == null) {
       await _prefs.setString(PREFS_DOMAIN, _ehUri);
     }
+
+    /// 初始化 50 条历史记录容量
     if (_prefs.getInt(PREFS_HISTORIES_MAX_LENGTH) == null) {
       await _prefs.setInt(PREFS_HISTORIES_MAX_LENGTH, 50);
+    }
+
+    /// 防止 e-hentai.org 警告⚠️
+    if (!currentCookieStr.contains('nw=1')) {
+      Cookie cookie = Cookie('nw', '1')
+        ..domain = _prefs.getString(PREFS_DOMAIN) == _exUri
+            ? 'exhentai.org'
+            : 'e-hentai.org'
+        ..expires = DateTime.now().add(Duration(days: 180))
+        ..path = '/'
+        ..httpOnly = false;
+
+      _cookieJar.saveFromResponse(
+          Uri.parse(_prefs.getString(PREFS_DOMAIN)), [cookie]);
     }
   }
 }

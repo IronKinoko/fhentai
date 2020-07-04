@@ -8,7 +8,7 @@ class ColorCategory extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
-  Color getColor() {
+  Color _getColor() {
     Color color;
     switch (category) {
       case 'Doujinshi':
@@ -49,7 +49,7 @@ class ColorCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: getColor(),
+      color: _getColor(),
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Text(
         category,

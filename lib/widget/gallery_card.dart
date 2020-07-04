@@ -1,9 +1,12 @@
+import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/views/detail/gallery_detail.dart';
 import 'package:fhentai/widget/index.dart';
 import 'package:flutter/material.dart';
+
+import 'LoadImage.dart';
 
 class GalleryCard extends StatelessWidget {
   final GalleryInfo record;
@@ -26,114 +29,97 @@ class GalleryCard extends StatelessWidget {
     const double _weight = 90;
 
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       child: Material(
         child: InkWell(
-          onTap: () {
-            ResponseGalerry.getFromHistories().pushToHistories(record);
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => GalleryDetail(record),
-            ));
-          },
-          child: Row(
-            children: <Widget>[
-              Hero(
-                tag: record.gid,
-                child: Material(
-                  child: CachedNetworkImage(
-                    httpHeaders: {'Cookie': Global.currentCookieStr},
-                    imageUrl: record.thumb,
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Container(
-                      width: _weight,
-                      height: _height,
-                      child: Center(
-                          child: CircularProgressIndicator(
-                        value: progress.progress,
-                      )),
+          onTap: () {},
+          child: OpenContainer(
+            openBuilder: (context, action) => GalleryDetail(record),
+            closedBuilder: (_, __) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                children: <Widget>[
+                  Hero(
+                    tag: record.gid,
+                    child: Material(
+                      child: SizedBox(
+                        width: _weight,
+                        height: _height,
+                        child: LoadImage(record.thumb),
+                      ),
                     ),
-                    fit: BoxFit.fitWidth,
-                    imageBuilder: (context, imageProvider) {
-                      return Ink.image(
-                        image: imageProvider,
-                        width: _weight,
-                        height: _height,
-                        fit: BoxFit.fitWidth,
-                      );
-                    },
-                    errorWidget: (context, url, error) => Container(
-                        width: _weight,
-                        height: _height,
-                        child: Center(child: Icon(Icons.error))),
                   ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: _height,
-                  padding: EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        record.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      // SizedBox(
-                      //   height: 8,
-                      // ),
-                      Text(
-                        record.uploader,
-                        style:
-                            TextStyle(color: Color(0xff666666), fontSize: 14),
-                      ),
-                      Spacer(),
-                      Column(
+                  Expanded(
+                    child: Container(
+                      height: _height,
+                      padding: EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Row(
+                          Text(
+                            record.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          // SizedBox(
+                          //   height: 8,
+                          // ),
+                          Text(
+                            record.uploader,
+                            style: TextStyle(
+                                color: Color(0xff666666), fontSize: 14),
+                          ),
+                          Spacer(),
+                          Column(
                             children: <Widget>[
-                              Rating(record.rating),
-                              Spacer(),
                               Row(
                                 children: <Widget>[
+                                  Rating(record.rating),
+                                  Spacer(),
+                                  Row(
+                                    children: <Widget>[
+                                      Text(
+                                        _buildLanguageString(record.title),
+                                        style: TextStyle(
+                                            color: Color(0xff666666),
+                                            fontSize: 14),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        '${record.filecount}P',
+                                        style: TextStyle(
+                                            color: Color(0xff666666),
+                                            fontSize: 14),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                              // SizedBox(
+                              //   height: 4,
+                              // ),
+                              Row(
+                                children: <Widget>[
+                                  ColorCategory(record.category),
+                                  Spacer(),
                                   Text(
-                                    _buildLanguageString(record.title),
-                                    style: TextStyle(
-                                        color: Color(0xff666666), fontSize: 14),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    '${record.filecount}P',
+                                    '${record.time}',
                                     style: TextStyle(
                                         color: Color(0xff666666), fontSize: 14),
                                   )
                                 ],
                               )
                             ],
-                          ),
-                          // SizedBox(
-                          //   height: 4,
-                          // ),
-                          Row(
-                            children: <Widget>[
-                              ColorCategory(record.category),
-                              Spacer(),
-                              Text(
-                                '${record.time}',
-                                style: TextStyle(
-                                    color: Color(0xff666666), fontSize: 14),
-                              )
-                            ],
                           )
                         ],
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
         ),
       ),

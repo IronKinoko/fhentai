@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fhentai/apis/gallery.dart';
 
 class GalleryDetailModel extends ChangeNotifier {
   Map<String, GalleryDetailPageState> _galleryMap = {};
-
   GalleryDetailPageState get(String gid) {
     return _galleryMap[gid];
   }
@@ -16,7 +16,22 @@ class GalleryDetailModel extends ChangeNotifier {
 
   void clear() {
     _galleryMap.clear();
+    notifyListeners();
   }
+
+  Future<GalleryDetailPageState> fetchGalleryDetail(
+      String gid, String token) async {
+    if (get(gid) == null) {
+      GalleryDetailPageState res = await galleryDetail(gid, token);
+      add(gid, res);
+    }
+    notifyListeners();
+    return get(gid);
+  }
+}
+
+class GalleryComicReaderState {
+  int currentIndex;
 }
 
 class GalleryDetailPageState {
@@ -248,7 +263,12 @@ class Page {
   });
 
   String thumb;
+
+  /// 图片地址 用于获取高清图片
   String url;
+
+  /// 高清图像链接
+  String imgurl;
 
   factory Page.fromRawJson(String str) => Page.fromJson(json.decode(str));
 

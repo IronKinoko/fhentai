@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'common/DB.dart';
 import 'common/global.dart';
 import 'generated/i18n.dart';
@@ -89,7 +88,15 @@ class _MyAppState extends State<MyApp> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           behavior: SnackBarBehavior.floating,
         ),
+        backgroundColor: Colors.grey[400],
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        appBarTheme: AppBarTheme(
+            elevation: 1,
+            color: Colors.white,
+            textTheme: Theme.of(context).textTheme,
+            brightness: Brightness.light,
+            iconTheme: IconThemeData(color: Colors.black87)),
+        // bottomAppBarColor: Colors.black,
       ),
       home: _loadEnd
           ? Global.isSignin == null ? Login() : Gallery()

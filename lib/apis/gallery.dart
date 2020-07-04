@@ -43,45 +43,44 @@ Future<ResponseGalerry> popularGalleryList(
 }
 
 Future<GalleryDetailPageState> galleryDetail(String gid, String token) async {
-  try {
-    List<dynamic> res = await Future.wait([
-      Global.dio.get('/g/$gid/$token?inline_set=ts_l'),
-      Global.dio.get('/gallerytorrents.php?gid=$gid&t=$token'),
-      _gdata([
-        [gid, token]
-      ]),
-    ]);
-    final String html = res[0].data;
-    final String torrentHtml = res[1].data;
-    final Info baseInfo = res[2][0];
+  // try {
+  List<dynamic> res = await Future.wait([
+    Global.dio.get('/g/$gid/$token?inline_set=ts_l'),
+    Global.dio.get('/gallerytorrents.php?gid=$gid&t=$token'),
+    _gdata([
+      [gid, token]
+    ]),
+  ]);
+  final String html = res[0].data;
+  final String torrentHtml = res[1].data;
+  final Info baseInfo = res[2][0];
 
-    List<Torrent> torrentList = parseTorrentList(torrentHtml);
-    List<Page> pageList = parseDetailPageList(html);
-    List<Tag> tagList = parseDetailPageTagList(html);
-    List<Comment> commentList = parseDetailPageCommentList(html);
-    OtherInfo otherInfo = parseDetailPageOtherInfo(html);
+  List<Torrent> torrentList = parseTorrentList(torrentHtml);
+  List<Page> pageList = parseDetailPageList(html);
+  List<Tag> tagList = parseDetailPageTagList(html);
+  List<Comment> commentList = parseDetailPageCommentList(html);
+  OtherInfo otherInfo = parseDetailPageOtherInfo(html);
 
-    baseInfo.ratingCount = otherInfo.ratingCount;
-    baseInfo.favcount = otherInfo.favcount;
-    baseInfo.favoritelink = otherInfo.favoritelink;
-    baseInfo.language = otherInfo.language;
+  baseInfo.ratingCount = otherInfo.ratingCount;
+  baseInfo.favcount = otherInfo.favcount;
+  baseInfo.favoritelink = otherInfo.favoritelink;
+  baseInfo.language = otherInfo.language;
 
-    baseInfo.torrents.forEach((torrent) {
-      Torrent target =
-          torrentList.firstWhere((element) => element.hash == torrent.hash);
-      torrent.downloads = target.downloads;
-      torrent.uploader = target.uploader;
-      torrent.url = target.url;
-    });
+  baseInfo.torrents.forEach((torrent) {
+    Torrent target =
+        torrentList.firstWhere((element) => element.hash == torrent.hash);
+    torrent.downloads = target.downloads;
+    torrent.uploader = target.uploader;
+    torrent.url = target.url;
+  });
 
-    GalleryDetailPageState state = GalleryDetailPageState(
-        info: baseInfo, pages: pageList, comments: commentList, tags: tagList);
-    // Clipboard.setData(ClipboardData(text: state.toRawJson()));
-    return state;
-  } catch (e) {
-    print(e);
-    throw Exception('load Error');
-  }
+  GalleryDetailPageState state = GalleryDetailPageState(
+      info: baseInfo, pages: pageList, comments: commentList, tags: tagList);
+  // Clipboard.setData(ClipboardData(text: state.toRawJson()));
+  return state;
+  // } catch (e) {
+  //   throw Exception(e);
+  // }
 }
 
 Future<List<Info>> _gdata(List<List<String>> gidlist) async {
