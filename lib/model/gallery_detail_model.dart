@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fhentai/apis/gallery.dart';
+import 'package:uuid/uuid.dart';
 
 class GalleryDetailModel extends ChangeNotifier {
   Map<String, GalleryDetailPageState> _galleryMap = {};
@@ -263,6 +264,7 @@ class Page {
   });
 
   String thumb;
+  final String uuid = Uuid().v4();
 
   /// 图片地址 用于获取高清图片
   String url;

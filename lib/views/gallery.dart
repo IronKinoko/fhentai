@@ -269,7 +269,9 @@ class _GalleryListState extends State<GalleryList> {
                         onPressed: () {},
                       )
                     : IconButton(
-                        icon: ClipOval(child: Image.asset('images/panda.png')),
+                        icon: Global.isSignin
+                            ? ClipOval(child: Image.asset('images/panda.png'))
+                            : Icon(Icons.account_circle),
                         onPressed: () {
                           Navigator.push(
                               context,

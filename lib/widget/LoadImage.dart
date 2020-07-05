@@ -27,8 +27,12 @@ class LoadImage extends StatelessWidget {
         timeoutDuration: Duration(seconds: 20),
       ),
       fit: BoxFit.fitWidth,
-      loadingWidget: Center(
-        child: CircularProgressIndicator(),
+      loadingWidget: Container(
+        width: width,
+        height: height,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
       width: width,
       height: height,

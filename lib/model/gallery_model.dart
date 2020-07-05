@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/views/gallery.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class ResponseGalerry {
   List<GalleryInfo> list;
@@ -57,6 +58,8 @@ class GalleryInfo {
     this.thumb,
   });
 
+  /// use to hero tag
+  final String uuid = Uuid().v4();
   final String title;
   final String category;
   final String time;

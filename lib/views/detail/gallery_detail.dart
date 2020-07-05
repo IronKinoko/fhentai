@@ -32,10 +32,15 @@ class GalleryDetail extends StatefulWidget {
 class _GalleryDetailState extends State<GalleryDetail> {
   GlobalKey<ScaffoldState> _scaffold = GlobalKey<ScaffoldState>();
   GalleryDetailPageState store;
+  bool _error = false;
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async {
+    Future.microtask(() => _init());
+  }
+
+  Future<void> _init() async {
+    try {
       GalleryDetailPageState res = await context
           .read<GalleryDetailModel>()
           .fetchGalleryDetail(widget.record.gid, widget.record.token);
@@ -43,25 +48,31 @@ class _GalleryDetailState extends State<GalleryDetail> {
         setState(() {
           store = res;
         });
-    });
+    } catch (e) {
+      if (mounted)
+        setState(() {
+          _error = true;
+        });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffold,
-        body: SingleChildScrollView(
-          child: SafeArea(
-            top: false,
-            child: Column(
-              children: <Widget>[
-                _Header(record: widget.record),
+      key: _scaffold,
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            _Header(
+              record: widget.record,
+            ),
 
-                /// button list
-                _buildButtonList(context),
+            /// button list
+            _buildButtonList(context),
 
-                /// loading box
-                store == null
+            _error
+                ? _buildErrorBox(context)
+                : store == null
                     ? _buildLoading()
                     : Column(
                         children: <Widget>[
@@ -75,10 +86,47 @@ class _GalleryDetailState extends State<GalleryDetail> {
                           _buildGrid(context),
                         ],
                       )
-              ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorBox(BuildContext context) {
+    return Container(
+      height: 300,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.error,
+              size: 80,
+              color: Theme.of(context).colorScheme.error,
             ),
-          ),
-        ));
+            SizedBox(height: 8),
+            Text(
+              I18n.of(context).Error,
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 8),
+            FlatButton(
+                textColor: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.primary,
+                onPressed: () {
+                  setState(() {
+                    _error = false;
+                    _init();
+                  });
+                },
+                child: Text(
+                  MaterialLocalizations.of(context)
+                      .refreshIndicatorSemanticLabel,
+                )),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildGrid(BuildContext context) {
@@ -95,7 +143,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
               child: Stack(
                 children: [
                   Hero(
-                    tag: page.thumb,
+                    tag: page.uuid,
                     child: Material(child: LoadImage(page.thumb)),
                   ),
                   Positioned.fill(
@@ -395,7 +443,7 @@ class _Header extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Hero(
-                  tag: record.gid,
+                  tag: record.uuid,
                   child: Material(
                     color: Theme.of(context).colorScheme.primary,
                     child: LoadImage(
@@ -420,10 +468,22 @@ class _Header extends StatelessWidget {
                             color: Theme.of(context).colorScheme.onPrimary),
                       ),
                       SizedBox(height: 8),
-                      Text(
-                        record.uploader,
-                        style: Theme.of(context).textTheme.subtitle1.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GalleryList(
+                                  isSearch: true,
+                                  fSearch: 'uploader:${record.uploader}',
+                                ),
+                              ));
+                        },
+                        child: Text(
+                          record.uploader,
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
+                              color: Theme.of(context).colorScheme.onPrimary),
+                        ),
                       ),
                       Spacer(),
                       ColorCategory(record.category)

@@ -33,92 +33,95 @@ class GalleryCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       child: Material(
         child: InkWell(
-          onTap: () {},
-          child: OpenContainer(
-            openBuilder: (context, action) => GalleryDetail(record),
-            closedBuilder: (_, __) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
-                children: <Widget>[
-                  Hero(
-                    tag: record.gid,
-                    child: Material(
-                      child: SizedBox(
-                        width: _weight,
-                        height: _height,
-                        child: LoadImage(record.thumb),
-                      ),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GalleryDetail(record),
+                ));
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: <Widget>[
+                Hero(
+                  tag: record.uuid,
+                  child: Material(
+                    child: SizedBox(
+                      width: _weight,
+                      height: _height,
+                      child: LoadImage(record.thumb),
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      height: _height,
-                      padding: EdgeInsets.all(8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            record.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          // SizedBox(
-                          //   height: 8,
-                          // ),
-                          Text(
-                            record.uploader,
-                            style: TextStyle(
-                                color: Color(0xff666666), fontSize: 14),
-                          ),
-                          Spacer(),
-                          Column(
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Rating(record.rating),
-                                  Spacer(),
-                                  Row(
-                                    children: <Widget>[
-                                      Text(
-                                        _buildLanguageString(record.title),
-                                        style: TextStyle(
-                                            color: Color(0xff666666),
-                                            fontSize: 14),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        '${record.filecount}P',
-                                        style: TextStyle(
-                                            color: Color(0xff666666),
-                                            fontSize: 14),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                              // SizedBox(
-                              //   height: 4,
-                              // ),
-                              Row(
-                                children: <Widget>[
-                                  ColorCategory(record.category),
-                                  Spacer(),
-                                  Text(
-                                    '${record.time}',
-                                    style: TextStyle(
-                                        color: Color(0xff666666), fontSize: 14),
-                                  )
-                                ],
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: _height,
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          record.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        // SizedBox(
+                        //   height: 8,
+                        // ),
+                        Text(
+                          record.uploader,
+                          style:
+                              TextStyle(color: Color(0xff666666), fontSize: 14),
+                        ),
+                        Spacer(),
+                        Column(
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Rating(record.rating),
+                                Spacer(),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      _buildLanguageString(record.title),
+                                      style: TextStyle(
+                                          color: Color(0xff666666),
+                                          fontSize: 14),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '${record.filecount}P',
+                                      style: TextStyle(
+                                          color: Color(0xff666666),
+                                          fontSize: 14),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                            // SizedBox(
+                            //   height: 4,
+                            // ),
+                            Row(
+                              children: <Widget>[
+                                ColorCategory(record.category),
+                                Spacer(),
+                                Text(
+                                  '${record.time}',
+                                  style: TextStyle(
+                                      color: Color(0xff666666), fontSize: 14),
+                                )
+                              ],
+                            )
+                          ],
+                        )
+                      ],
                     ),
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
           ),
         ),
