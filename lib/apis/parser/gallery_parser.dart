@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:fhentai/common/DB.dart';
 import 'package:fhentai/model/db_model.dart';
@@ -82,14 +83,35 @@ List<String> _parseUrl(String url) {
 List<Page> parseDetailPageList(String html) {
   var document = HtmlParser(html, encoding: 'utf-8').parse();
 
+  /// get style background url
+  RegExp re = RegExp(r'width:(.*)px;.*height:(.*)px;.*url\((.*)\) -(.*?)px');
+
   final gdts =
       document.getElementById('gdt').querySelectorAll('div[class^="gdt"]');
-  return gdts.map((gdt) {
+  int i = 0;
+  int k = 0;
+  final List<Page> list = gdts.map((gdt) {
     final aEl = gdt.querySelector('a');
     final imgEl = gdt.querySelector('img');
-
-    return Page(url: aEl.attributes['href'], thumb: imgEl.attributes['src']);
+    String thumb = imgEl.attributes['src'];
+    if (gdt.className == 'gdtm') {
+      final page = Page.fromSprites(url: aEl.attributes['href']);
+      final divEl = gdt.querySelector('div');
+      String style = divEl.attributes['style'];
+      RegExpMatch res = re.firstMatch(style);
+      page.spriteWidth = double.parse(res.group(1));
+      page.spriteHeight = double.parse(res.group(2)) - 1;
+      page.thumb = res.group(3);
+      page.alignIndex = i % 20;
+      page.aligntotal = min(gdts.length - k * 20, 20);
+      i++;
+      if (i % 20 == 0) k++;
+      return page;
+    }
+    return Page(url: aEl.attributes['href'], thumb: thumb);
   }).toList();
+
+  return list;
 }
 
 List<Comment> parseDetailPageCommentList(String html) {
@@ -197,7 +219,6 @@ List<Torrent> parseTorrentList(String html) {
           info.hash = a.attributes['href'].split('/').last.split('.').first;
           return info;
         } catch (e) {
-          print(e);
           return null;
         }
       })

@@ -1,5 +1,6 @@
-import 'package:fhentai/widget/LoadImage.dart';
+import 'package:fhentai/widget/load_image.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class ComicItem extends StatelessWidget {
   final String url;
@@ -16,7 +17,7 @@ class ComicItem extends StatelessWidget {
             ),
           )
         : Hero(
-            tag: url,
+            tag: Uuid().v4(),
             child: Material(
               child: LoadImage(url),
             ),

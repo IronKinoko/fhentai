@@ -9,9 +9,10 @@ import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/views/comic/comic_reader.dart';
 import 'package:fhentai/views/detail/gallery_torrent.dart';
 import 'package:fhentai/views/gallery.dart';
-import 'package:fhentai/views/search_result.dart';
-import 'package:fhentai/widget/LoadImage.dart';
+import 'package:fhentai/views/search/search_result.dart';
+import 'package:fhentai/widget/load_image.dart';
 import 'package:fhentai/widget/index.dart';
+import 'package:fhentai/widget/load_sprites_image.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,32 +62,35 @@ class _GalleryDetailState extends State<GalleryDetail> {
     return Scaffold(
       key: _scaffold,
       body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            _Header(
-              record: widget.record,
-            ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: <Widget>[
+              _Header(
+                record: widget.record,
+              ),
 
-            /// button list
-            _buildButtonList(context),
+              /// button list
+              _buildButtonList(context),
 
-            _error
-                ? _buildErrorBox(context)
-                : store == null
-                    ? _buildLoading()
-                    : Column(
-                        children: <Widget>[
-                          _buildInfo(context),
-                          Divider(height: 0.5),
-                          Divider(height: 0.5),
-                          _buildTags(context),
-                          Divider(height: 0.5),
-                          _buildComments(context),
-                          Divider(height: 0.5),
-                          _buildGrid(context),
-                        ],
-                      )
-          ],
+              _error
+                  ? _buildErrorBox(context)
+                  : store == null
+                      ? _buildLoading()
+                      : Column(
+                          children: <Widget>[
+                            _buildInfo(context),
+                            Divider(height: 0.5),
+                            Divider(height: 0.5),
+                            _buildTags(context),
+                            Divider(height: 0.5),
+                            _buildComments(context),
+                            Divider(height: 0.5),
+                            _buildGrid(context),
+                          ],
+                        )
+            ],
+          ),
         ),
       ),
     );
@@ -129,11 +133,46 @@ class _GalleryDetailState extends State<GalleryDetail> {
     );
   }
 
+  Widget _buildInkWell(int index) {
+    return Positioned.fill(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return ComicReader(
+                    gid: widget.record.gid,
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _buildGrid(BuildContext context) {
     int i = 0;
     return Wrap(
-      children: store.pages.sublist(0, min(20, store.pages.length)).map((page) {
+      children: store.pages.sublist(0, min(40, store.pages.length)).map((page) {
         int k = i++;
+
+        if (page.sprites) {
+          return FractionallySizedBox(
+            widthFactor: 0.25,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              child: Hero(
+                tag: page.uuid,
+                child: Material(child: LoadSpritesImage(page)),
+              ),
+            ),
+          );
+        }
         return FractionallySizedBox(
           widthFactor: 0.25,
           child: Container(
@@ -146,25 +185,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
                     tag: page.uuid,
                     child: Material(child: LoadImage(page.thumb)),
                   ),
-                  Positioned.fill(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return ComicReader(
-                                  gid: widget.record.gid,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
+                  _buildInkWell(k)
                 ],
               ),
             ),
@@ -473,8 +494,7 @@ class _Header extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => GalleryList(
-                                  isSearch: true,
+                                builder: (context) => SearchResult(
                                   fSearch: 'uploader:${record.uploader}',
                                 ),
                               ));

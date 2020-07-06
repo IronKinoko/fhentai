@@ -23,6 +23,7 @@ class LoadImage extends StatelessWidget {
         retryLimit: 20,
         retryDuration: Duration(milliseconds: 300),
         cacheRule: CacheRule(maxAge: const Duration(days: 1)),
+        useDiskCache: true,
         printError: true,
         timeoutDuration: Duration(seconds: 20),
       ),

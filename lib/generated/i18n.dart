@@ -76,8 +76,8 @@ class I18n implements WidgetsLocalizations {
   String get AboutLicense => "开源证书";
   /// "版本"
   String get AboutVersion => "版本";
-  /// "EhentaiView 是 E-hentai.org 的非官方项目"
-  String get AboutEhentaiViewDesc => "EhentaiView 是 E-hentai.org 的非官方项目";
+  /// "FHentai 是 E-hentai.org 的非官方项目"
+  String get AboutFHentaiDesc => "FHentai 是 E-hentai.org 的非官方项目";
   /// "主题"
   String get Theme => "主题";
   /// "亮色"
@@ -274,9 +274,9 @@ class _I18n_en_US extends I18n {
   /// "Version"
   @override
   String get AboutVersion => "Version";
-  /// "EhentaiView is not affiliated with E-hentai.org in any way"
+  /// "FHentai is not affiliated with E-hentai.org in any way"
   @override
-  String get AboutEhentaiViewDesc => "EhentaiView is not affiliated with E-hentai.org in any way";
+  String get AboutFHentaiDesc => "FHentai is not affiliated with E-hentai.org in any way";
   /// "Theme"
   @override
   String get Theme => "Theme";

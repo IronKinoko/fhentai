@@ -2,7 +2,7 @@ import 'package:fhentai/apis/gallery.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/model/gallery_model.dart';
-import 'package:fhentai/views/search.dart';
+import 'package:fhentai/views/search/search.dart';
 import 'package:fhentai/views/settings/settings.dart';
 import 'package:fhentai/widget/bottom_navigation.dart';
 import 'package:fhentai/widget/index.dart';

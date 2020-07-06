@@ -6,7 +6,7 @@ import 'package:fhentai/views/detail/gallery_detail.dart';
 import 'package:fhentai/widget/index.dart';
 import 'package:flutter/material.dart';
 
-import 'LoadImage.dart';
+import 'load_image.dart';
 
 class GalleryCard extends StatelessWidget {
   final GalleryInfo record;
@@ -34,6 +34,7 @@ class GalleryCard extends StatelessWidget {
       child: Material(
         child: InkWell(
           onTap: () {
+            ResponseGalerry.getFromHistories().pushToHistories(record);
             Navigator.push(
                 context,
                 MaterialPageRoute(

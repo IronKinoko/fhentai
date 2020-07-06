@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:fhentai/views/search_result.dart';
+import 'package:fhentai/views/search/search_result.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends SearchDelegate<String> {

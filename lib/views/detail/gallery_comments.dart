@@ -1,7 +1,7 @@
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
-import 'package:fhentai/views/webview_link.dart';
+import 'package:fhentai/views/other/webview_link.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';

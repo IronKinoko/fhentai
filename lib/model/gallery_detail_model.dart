@@ -263,14 +263,41 @@ class Page {
     this.url,
   });
 
+  Page.fromSprites({
+    this.alignIndex,
+    this.thumb,
+    this.url,
+    this.spriteWidth,
+    this.spriteHeight,
+  }) {
+    this.sprites = true;
+  }
+
   String thumb;
-  final String uuid = Uuid().v4();
 
   /// 图片地址 用于获取高清图片
   String url;
 
   /// 高清图像链接
   String imgurl;
+
+  /// 雪碧图标志
+  bool sprites = false;
+
+  /// 雪碧图偏移位置
+  int alignIndex;
+
+  /// 雪碧图单图总容量
+  int aligntotal;
+
+  /// 雪碧图宽度
+  double spriteWidth;
+
+  /// 雪碧图高度
+  double spriteHeight;
+
+  /// hero tag
+  final String uuid = Uuid().v4();
 
   factory Page.fromRawJson(String str) => Page.fromJson(json.decode(str));
 

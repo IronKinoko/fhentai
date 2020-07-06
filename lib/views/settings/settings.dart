@@ -1,4 +1,5 @@
 import 'package:fhentai/generated/i18n.dart';
+import 'package:fhentai/views/about/about.dart';
 import 'package:fhentai/views/settings/settings_advanced.dart';
 import 'package:fhentai/views/settings/settings_eh.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,13 @@ class Settings extends StatelessWidget {
                 leading: Icon(Icons.info),
                 title: Text(I18n.of(context).About),
                 trailing: Icon(Icons.arrow_right),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AboutView(),
+                      ));
+                },
               )
             ],
           ),
