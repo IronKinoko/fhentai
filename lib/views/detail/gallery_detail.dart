@@ -139,16 +139,16 @@ class _GalleryDetailState extends State<GalleryDetail> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return ComicReader(
-                    gid: widget.record.gid,
-                  );
-                },
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) {
+            //       return ComicReader(
+            //         gid: widget.record.gid,
+            //       );
+            //     },
+            //   ),
+            // );
           },
         ),
       ),
@@ -166,9 +166,14 @@ class _GalleryDetailState extends State<GalleryDetail> {
             widthFactor: 0.25,
             child: Container(
               padding: EdgeInsets.all(8),
-              child: Hero(
-                tag: page.uuid,
-                child: Material(child: LoadSpritesImage(page)),
+              child: Stack(
+                children: <Widget>[
+                  Hero(
+                    tag: page.uuid,
+                    child: Material(child: LoadSpritesImage(page)),
+                  ),
+                  _buildInkWell(k)
+                ],
               ),
             ),
           );
