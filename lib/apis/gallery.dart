@@ -83,6 +83,18 @@ Future<GalleryDetailPageState> galleryDetail(String gid, String token) async {
   // }
 }
 
+Future<List<Page>> getNextPage(String gid, String token, int page) async {
+  Response res = await Global.dio.get('/g/$gid/$token?inline_set=ts_l&p=$page');
+  List<Page> pageList = parseDetailPageList(res.data);
+
+  return pageList;
+}
+
+Future<String> loadHighQualityImageUrl(String url) async {
+  Response res = await Global.dio.get(url);
+  return parseBigImg(res.data);
+}
+
 Future<List<Info>> _gdata(List<List<String>> gidlist) async {
   if (gidlist.length == 0) return [];
   final List<Future<Response<String>>> taskList = [];

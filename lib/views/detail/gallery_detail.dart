@@ -133,22 +133,30 @@ class _GalleryDetailState extends State<GalleryDetail> {
     );
   }
 
+  void showComic([int index]) {
+    if (index != null)
+      context
+          .read<GalleryDetailModel>()
+          .setCurrentIndex(widget.record.gid, index);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ComicReader(
+            gid: widget.record.gid,
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildInkWell(int index) {
     return Positioned.fill(
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) {
-            //       return ComicReader(
-            //         gid: widget.record.gid,
-            //       );
-            //     },
-            //   ),
-            // );
+            showComic(index);
           },
         ),
       ),
@@ -426,7 +434,11 @@ class _GalleryDetailState extends State<GalleryDetail> {
                 ),
                 color: Theme.of(context).colorScheme.primary,
                 textColor: Theme.of(context).colorScheme.onPrimary,
-                onPressed: store != null ? () {} : null,
+                onPressed: store != null
+                    ? () {
+                        showComic();
+                      }
+                    : null,
               ),
             ),
           )

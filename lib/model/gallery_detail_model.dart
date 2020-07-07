@@ -20,19 +20,58 @@ class GalleryDetailModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setCurrentIndex(String gid, int index) {
+    GalleryDetailPageState store = get(gid);
+    store.readerState.currentIndex = index;
+    checkNeedGetNextPage(store, index);
+    notifyListeners();
+  }
+
+  void checkNeedGetNextPage(GalleryDetailPageState store, int index) async {
+    int filecount = int.parse(store.info.filecount);
+    int pagesLength = store.pages.length;
+    if (store.readerState.loading) return;
+    if (filecount > pagesLength) {
+      /// 需要加载下一页
+      if (pagesLength - index < 7) {
+        store.readerState.loading = true;
+        ++store.readerState.loadedPage;
+        List<Page> nextPages = await getNextPage(store.info.gid.toString(),
+            store.info.token, store.readerState.loadedPage);
+        store.pages.addAll(nextPages);
+        store.readerState.loading = false;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<String> getRemoteHighQualityImageUrl(Page page, int index) async {
+    if (page.imgurl == null) {
+      page.imgurl = await loadHighQualityImageUrl(page.url);
+      notifyListeners();
+    }
+    return page.imgurl;
+  }
+
   Future<GalleryDetailPageState> fetchGalleryDetail(
       String gid, String token) async {
-    if (get(gid) == null) {
-      GalleryDetailPageState res = await galleryDetail(gid, token);
+    GalleryDetailPageState res;
+    res = get(gid);
+    if (res == null) {
+      res = await galleryDetail(gid, token);
       add(gid, res);
     }
     notifyListeners();
-    return get(gid);
+    return res;
   }
 }
 
 class GalleryComicReaderState {
   int currentIndex;
+  int loadedPage = 0;
+  bool loading = false;
+
+  GalleryComicReaderState({this.currentIndex = 0});
 }
 
 class GalleryDetailPageState {
@@ -47,6 +86,9 @@ class GalleryDetailPageState {
   List<Page> pages;
   List<Comment> comments;
   List<Tag> tags;
+
+  GalleryComicReaderState readerState =
+      GalleryComicReaderState(currentIndex: 0);
 
   factory GalleryDetailPageState.fromRawJson(String str) =>
       GalleryDetailPageState.fromJson(json.decode(str));
@@ -275,7 +317,7 @@ class Page {
 
   String thumb;
 
-  /// 图片地址 用于获取高清图片
+  /// 图片地址 用于获取高清图��
   String url;
 
   /// 高清图像链接

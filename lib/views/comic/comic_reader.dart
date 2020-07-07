@@ -1,6 +1,7 @@
 import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:fhentai/views/comic/comic_list.dart';
 import 'package:flutter/material.dart' hide Page;
+import 'package:provider/provider.dart';
 
 class ComicReader extends StatefulWidget {
   final String gid;
@@ -13,17 +14,6 @@ class ComicReader extends StatefulWidget {
 class _ComicReaderState extends State<ComicReader> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Comic'),
-      ),
-      body: Container(
-        child: Stack(
-          children: <Widget>[
-            ComicList(gid: widget.gid),
-          ],
-        ),
-      ),
-    );
+    return ComicList(gid: widget.gid);
   }
 }

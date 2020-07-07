@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:fhentai/common/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';
@@ -7,11 +9,13 @@ class LoadImage extends StatelessWidget {
   final String url;
   final double width;
   final double height;
+  final LoadingWidgetBuilder loadingWidgetBuilder;
   const LoadImage(
     this.url, {
     Key key,
     this.width,
     this.height,
+    this.loadingWidgetBuilder,
   }) : super(key: key);
 
   @override
@@ -28,6 +32,7 @@ class LoadImage extends StatelessWidget {
         timeoutDuration: Duration(seconds: 20),
       ),
       fit: BoxFit.fitWidth,
+      loadingWidgetBuilder: loadingWidgetBuilder,
       loadingWidget: Container(
         width: width,
         height: height,

@@ -100,6 +100,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Colors.grey[50],
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
@@ -110,7 +111,6 @@ class _LoginState extends State<Login> {
           child: SafeArea(
             child: Container(
               margin: EdgeInsets.only(top: 64),
-              color: Colors.grey[50],
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
