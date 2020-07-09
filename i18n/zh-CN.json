@@ -33,6 +33,7 @@
   },
   "Sign_In": {
     "": "登录",
+    "need": "需要登录",
     "welcome": "欢迎使用 FHentai",
     "Email": "邮箱",
     "Cookie": "使用 Cookie 登录",

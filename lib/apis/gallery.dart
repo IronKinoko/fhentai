@@ -42,6 +42,18 @@ Future<ResponseGalerry> popularGalleryList(
   }
 }
 
+Future<ResponseGalerry> favoritesGalleryList(
+    {int page, String fSearch = ''}) async {
+  try {
+    Response res = await Global.dio.get(Uri.encodeFull(
+        '/favorites.php?inline_set=dm_l&page=$page&f_search=$fSearch'));
+
+    return parseGalleryList(res.data, GalleryMode.Favorites);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
 Future<GalleryDetailPageState> galleryDetail(String gid, String token) async {
   // try {
   List<dynamic> res = await Future.wait([
@@ -90,7 +102,7 @@ Future<List<Page>> getNextPage(String gid, String token, int page) async {
   return pageList;
 }
 
-Future<String> loadHighQualityImageUrl(String url) async {
+Future<BigImageInfo> loadHighQualityImageUrl(String url) async {
   Response res = await Global.dio.get(url);
   return parseBigImg(res.data);
 }

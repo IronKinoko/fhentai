@@ -50,9 +50,9 @@ class _LoadSpritesImageState extends State<LoadSpritesImage> {
         if (snapshot.data == null) {
           return Container(
             height: 150,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
+            // child: Center(
+            //   child: CircularProgressIndicator(),
+            // ),
           );
         }
         return Center(

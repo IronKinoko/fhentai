@@ -10,12 +10,14 @@ class LoadImage extends StatelessWidget {
   final double width;
   final double height;
   final LoadingWidgetBuilder loadingWidgetBuilder;
+  final Widget loadingWidget;
   const LoadImage(
     this.url, {
     Key key,
     this.width,
     this.height,
     this.loadingWidgetBuilder,
+    this.loadingWidget,
   }) : super(key: key);
 
   @override
@@ -33,13 +35,7 @@ class LoadImage extends StatelessWidget {
       ),
       fit: BoxFit.fitWidth,
       loadingWidgetBuilder: loadingWidgetBuilder,
-      loadingWidget: Container(
-        width: width,
-        height: height,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
+      loadingWidget: loadingWidget ?? Container(),
       width: width,
       height: height,
     );

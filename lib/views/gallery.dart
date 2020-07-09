@@ -2,6 +2,7 @@ import 'package:fhentai/apis/gallery.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/model/gallery_model.dart';
+import 'package:fhentai/views/login.dart';
 import 'package:fhentai/views/search/search.dart';
 import 'package:fhentai/views/settings/settings.dart';
 import 'package:fhentai/widget/bottom_navigation.dart';
@@ -68,6 +69,7 @@ class _GalleryListState extends State<GalleryList> {
   }
 
   Future<void> _loadPage(int page) async {
+    if (widget.mode == GalleryMode.Favorites && !Global.isSignin) return;
     try {
       if (_isPerformingRequest || (_isEnd && page != 0)) return;
       setState(() {
@@ -98,9 +100,13 @@ class _GalleryListState extends State<GalleryList> {
         case GalleryMode.Popular:
           res = await popularGalleryList(page: page, fSearch: widget.fSearch);
           break;
+        case GalleryMode.Favorites:
+          res = await favoritesGalleryList(page: page, fSearch: widget.fSearch);
+          break;
         case GalleryMode.Histories:
           res = ResponseGalerry.getFromHistories();
           break;
+
         default:
       }
 
@@ -235,9 +241,50 @@ class _GalleryListState extends State<GalleryList> {
       case GalleryMode.Histories:
         return I18n.of(context).Histories;
         break;
+      case GalleryMode.Favorites:
+        return I18n.of(context).Favorites;
       default:
         return '';
     }
+  }
+
+  Widget _buildLogin() {
+    return SliverGrid.count(
+      crossAxisCount: 1,
+      children: <Widget>[
+        Container(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.error,
+                  size: 80,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                SizedBox(height: 8),
+                Text(
+                  I18n.of(context).Sign_InNeed,
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                SizedBox(height: 8),
+                FlatButton(
+                    textColor: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.primary,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Login(),
+                          ));
+                    },
+                    child: Text(I18n.of(context).Sign_In)),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   @override
@@ -289,21 +336,23 @@ class _GalleryListState extends State<GalleryList> {
             ),
             _error
                 ? _buildError(context)
-                : _dataSource == null
-                    ? _buildFirstLoading(context)
-                    : SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          if (index == _dataSource.length) {
-                            if (index == 0) {
-                              return _buildEmpty();
-                            }
-                            return _buildProgressIndicator();
-                          }
-                          return GalleryCard(_dataSource[index]);
-                        },
-                        childCount: _dataSource.length + 1,
-                      ))
+                : !Global.isSignin && widget.mode == GalleryMode.Favorites
+                    ? _buildLogin()
+                    : _dataSource == null
+                        ? _buildFirstLoading(context)
+                        : SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              if (index == _dataSource.length) {
+                                if (index == 0) {
+                                  return _buildEmpty();
+                                }
+                                return _buildProgressIndicator();
+                              }
+                              return GalleryCard(_dataSource[index]);
+                            },
+                            childCount: _dataSource.length + 1,
+                          ))
           ],
         ),
       ),
@@ -355,7 +404,7 @@ class _GalleryState extends State<Gallery> {
       GalleryList(),
       GalleryList(mode: GalleryMode.Watched),
       GalleryList(mode: GalleryMode.Popular),
-      GalleryList(),
+      GalleryList(mode: GalleryMode.Favorites),
       GalleryList(mode: GalleryMode.Histories)
     ]);
     _pageController =
@@ -378,7 +427,7 @@ class _GalleryState extends State<Gallery> {
       body: Container(
         child: PageView.builder(
           controller: _pageController,
-          itemCount: 5,
+          itemCount: widgetList.length,
           itemBuilder: (context, index) {
             return widgetList[index];
           },

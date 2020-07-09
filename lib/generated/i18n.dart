@@ -86,6 +86,8 @@ class I18n implements WidgetsLocalizations {
   String get ThemeDark => "暗色";
   /// "登录"
   String get Sign_In => "登录";
+  /// "需要登录"
+  String get Sign_InNeed => "需要登录";
   /// "欢迎使用 FHentai"
   String get Sign_InWelcome => "欢迎使用 FHentai";
   /// "邮箱"
@@ -289,6 +291,9 @@ class _I18n_en_US extends I18n {
   /// "Sign In"
   @override
   String get Sign_In => "Sign In";
+  /// "Need Sign In"
+  @override
+  String get Sign_InNeed => "Need Sign In";
   /// "Welcome FHentai"
   @override
   String get Sign_InWelcome => "Welcome FHentai";

@@ -303,7 +303,8 @@ class _GalleryDetailState extends State<GalleryDetail> {
 
   Widget _buildInfo(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8)
+          .copyWith(bottom: 0),
       child: Column(
         children: <Widget>[
           Row(
@@ -469,6 +470,14 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String uploader = context.select<GalleryDetailModel, String>((map) {
+          if (map.get(record.gid) != null) {
+            return map.get(record.gid).info.uploader;
+          }
+          return null;
+        }) ??
+        record.uploader;
+
     return Container(
       color: Theme.of(context).colorScheme.primary,
       child: SafeArea(
@@ -512,12 +521,12 @@ class _Header extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => SearchResult(
-                                  fSearch: 'uploader:${record.uploader}',
+                                  fSearch: 'uploader:$uploader',
                                 ),
                               ));
                         },
                         child: Text(
-                          record.uploader,
+                          uploader,
                           style: Theme.of(context).textTheme.subtitle1.copyWith(
                               color: Theme.of(context).colorScheme.onPrimary),
                         ),

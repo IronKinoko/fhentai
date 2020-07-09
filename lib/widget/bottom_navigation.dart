@@ -1,3 +1,4 @@
+import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/views/gallery.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class BNavigation extends StatelessWidget {
         GalleryMode.Popular,
       ),
       BarItem(I18n.of(context).Favorites, Icon(Icons.favorite),
-          GalleryMode.FrontPage),
+          GalleryMode.Favorites),
       BarItem(I18n.of(context).Histories, Icon(Icons.history),
           GalleryMode.Histories),
     ];

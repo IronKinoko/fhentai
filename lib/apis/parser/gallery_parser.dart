@@ -18,7 +18,7 @@ ResponseGalerry parseGalleryList(String html,
   if (html.contains('No hits found')) {
     return ResponseGalerry(res, total);
   }
-  if (mode == GalleryMode.FrontPage)
+  if (mode == GalleryMode.FrontPage || mode == GalleryMode.Favorites)
     total = int.parse(
         document.querySelector('p.ip').text.replaceAll(RegExp(r'[^0-9]'), ''));
   if (mode == GalleryMode.Watched)
@@ -34,10 +34,13 @@ ResponseGalerry parseGalleryList(String html,
           DateTime.parse(tr.querySelector('[id^=posted_]').text + 'Z')
               .toLocal());
       var rating = _parseRating(tr.querySelector('.ir').attributes['style']);
+
       var url = tr.querySelector('.glink').parent.attributes['href'];
-      var uploader = tr.querySelector('.gl4c a').text;
-      var filecount = int.parse(
-          tr.querySelectorAll('.gl4c div')[1].text.replaceAll(' pages', ''));
+      var uploader =
+          mode == GalleryMode.Favorites ? '' : tr.querySelector('.gl4c a').text;
+      var filecount = int.parse(RegExp(r':\d\d(\d+) pages')
+          .firstMatch(tr.querySelector('.glthumb').text)
+          .group(1));
       var gid = _parseUrl(url)[0];
       var token = _parseUrl(url)[1];
       var thumb = tr.querySelector('.glthumb img').attributes['data-src'] ??
@@ -186,9 +189,19 @@ OtherInfo parseDetailPageOtherInfo(String html) {
   );
 }
 
-String parseBigImg(String html) {
+BigImageInfo parseBigImg(String html) {
   Document document = HtmlParser(html, encoding: 'utf-8').parse();
-  return document.getElementById('img').attributes['src'];
+  BigImageInfo bigImageInfo = BigImageInfo();
+  RegExp reWidth = RegExp(r'width:\s?(\d+)px');
+  RegExp reHeight = RegExp(r'height:\s?(\d+)px');
+  bigImageInfo.imageurl = document.getElementById('img').attributes['src'];
+  bigImageInfo.width = double.parse(reWidth
+      .firstMatch(document.getElementById('img').attributes['style'])
+      .group(1));
+  bigImageInfo.height = double.parse(reHeight
+      .firstMatch(document.getElementById('img').attributes['style'])
+      .group(1));
+  return bigImageInfo;
 }
 
 List<Torrent> parseTorrentList(String html) {

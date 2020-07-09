@@ -38,30 +38,32 @@ class GalleryCommentItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(comment.userName),
-          Text(comment.time),
-        ],
-      ),
-      subtitle: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: showAll ? double.infinity : 100),
-        child: Html(
-          data: comment.comment + ' ' + comment.score,
-          style: {
-            'body': Style(
-                margin: EdgeInsets.only(top: 8), padding: EdgeInsets.all(0))
-          },
-          onLinkTap: (url) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WebviewLink(url),
-                ));
-          },
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(comment.userName),
+            Text(comment.time),
+          ],
         ),
-      ),
-    );
+        subtitle: ConstrainedBox(
+          constraints:
+              BoxConstraints(maxHeight: showAll ? double.infinity : 100),
+          child: Html(
+            data: comment.comment + ' ' + comment.score,
+            style: {
+              'body': Style(
+                  margin: EdgeInsets.only(top: 8),
+                  padding: EdgeInsets.all(0),
+                  fontSize: FontSize(16))
+            },
+            onLinkTap: (url) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WebviewLink(url),
+                  ));
+            },
+          ),
+        ));
   }
 }

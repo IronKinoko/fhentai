@@ -54,8 +54,8 @@ class _LoginState extends State<Login> {
       await Global.prefs.setString(PREFS_DOMAIN, Global.exUri);
       await Global.prefs.setBool(PREFS_ISSIGNIN, true);
     }
-    Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (ctx) => Gallery()));
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (ctx) => Gallery()), (_) => false);
   }
 
   void _save(context) async {

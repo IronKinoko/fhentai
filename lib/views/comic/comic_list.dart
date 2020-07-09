@@ -21,10 +21,15 @@ class _ComicListState extends State<ComicList> {
   ItemScrollController _itemScrollController = ItemScrollController();
   ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
   bool _showMenu = false;
+  int initpage = 0;
   @override
   void initState() {
     super.initState();
     itemPositionsListener.itemPositions.addListener(_valueChanged);
+    GalleryDetailPageState store =
+        context.read<GalleryDetailModel>().get(widget.gid);
+    initpage = store.readerState.currentIndex;
+    print(initpage);
   }
 
   @override
@@ -38,7 +43,7 @@ class _ComicListState extends State<ComicList> {
 
     if (value.isNotEmpty) {
       int min = value
-          .where((ItemPosition position) => position.itemTrailingEdge > 0.4)
+          .where((ItemPosition position) => position.itemTrailingEdge > 0)
           .reduce((ItemPosition min, ItemPosition position) =>
               position.itemTrailingEdge < min.itemTrailingEdge ? position : min)
           .index;
@@ -65,13 +70,23 @@ class _ComicListState extends State<ComicList> {
             Positioned.fill(
               child: ScrollablePositionedList.builder(
                 padding: MediaQuery.of(context).padding,
-                initialScrollIndex: store.readerState.currentIndex,
+                initialScrollIndex: initpage,
                 itemScrollController: _itemScrollController,
                 itemCount:
                     min(int.parse(store.info.filecount), store.pages.length),
                 itemPositionsListener: itemPositionsListener,
                 itemBuilder: (context, index) {
                   Page page = store.pages[index];
+                  if (store.pages.length == index &&
+                      index < int.parse(store.info.filecount) &&
+                      store.readerState.loading) {
+                    return Container(
+                      height: 200,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
                   return GestureDetector(
                     onTapUp: (details) {
                       setState(() {

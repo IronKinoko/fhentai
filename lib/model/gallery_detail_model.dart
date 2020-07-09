@@ -34,23 +34,38 @@ class GalleryDetailModel extends ChangeNotifier {
     if (filecount > pagesLength) {
       /// 需要加载下一页
       if (pagesLength - index < 7) {
-        store.readerState.loading = true;
-        ++store.readerState.loadedPage;
-        List<Page> nextPages = await getNextPage(store.info.gid.toString(),
-            store.info.token, store.readerState.loadedPage);
-        store.pages.addAll(nextPages);
-        store.readerState.loading = false;
-        notifyListeners();
+        try {
+          store.readerState.loading = true;
+          ++store.readerState.loadedPage;
+
+          List<Page> nextPages = await getNextPage(store.info.gid.toString(),
+              store.info.token, store.readerState.loadedPage);
+          store.pages.addAll(nextPages);
+          store.readerState.loading = false;
+          notifyListeners();
+        } catch (e) {
+          print(e);
+          --store.readerState.loadedPage;
+          store.readerState.loading = false;
+          checkNeedGetNextPage(store, index);
+        }
       }
     }
   }
 
-  Future<String> getRemoteHighQualityImageUrl(Page page, int index) async {
-    if (page.imgurl == null) {
-      page.imgurl = await loadHighQualityImageUrl(page.url);
-      notifyListeners();
+  Future<BigImageInfo> getRemoteHighQualityImageUrl(
+      Page page, int index) async {
+    if (page.bigImageInfo.imageurl == null && !page.loadingBigImg) {
+      try {
+        page.loadingBigImg = true;
+        page.bigImageInfo = await loadHighQualityImageUrl(page.url);
+        page.loadingBigImg = false;
+      } catch (e) {
+        page.loadingBigImg = false;
+      }
+      // notifyListeners();
     }
-    return page.imgurl;
+    return page.bigImageInfo;
   }
 
   Future<GalleryDetailPageState> fetchGalleryDetail(
@@ -299,6 +314,18 @@ class Torrent {
       };
 }
 
+class BigImageInfo {
+  String imageurl;
+  double width;
+  double height;
+  BigImageInfo({this.imageurl, this.height, this.width});
+
+  @override
+  String toString() {
+    return 'width: $width; height: $height; imageurl: $imageurl;';
+  }
+}
+
 class Page {
   Page({
     this.thumb,
@@ -321,7 +348,7 @@ class Page {
   String url;
 
   /// 高清图像链接
-  String imgurl;
+  BigImageInfo bigImageInfo = BigImageInfo();
 
   /// 雪碧图标志
   bool sprites = false;
@@ -337,6 +364,8 @@ class Page {
 
   /// 雪碧图高度
   double spriteHeight;
+
+  bool loadingBigImg = false;
 
   /// hero tag
   final String uuid = Uuid().v4();
