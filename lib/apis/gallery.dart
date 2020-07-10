@@ -57,7 +57,7 @@ Future<ResponseGalerry> favoritesGalleryList(
 Future<GalleryDetailPageState> galleryDetail(String gid, String token) async {
   // try {
   List<dynamic> res = await Future.wait([
-    Global.dio.get('/g/$gid/$token?inline_set=ts_l'),
+    Global.dio.get('/g/$gid/$token?inline_set=ts_m'),
     Global.dio.get('/gallerytorrents.php?gid=$gid&t=$token'),
     _gdata([
       [gid, token]
@@ -96,7 +96,7 @@ Future<GalleryDetailPageState> galleryDetail(String gid, String token) async {
 }
 
 Future<List<Page>> getNextPage(String gid, String token, int page) async {
-  Response res = await Global.dio.get('/g/$gid/$token?inline_set=ts_l&p=$page');
+  Response res = await Global.dio.get('/g/$gid/$token?inline_set=ts_m&p=$page');
   List<Page> pageList = parseDetailPageList(res.data);
 
   return pageList;

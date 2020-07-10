@@ -60,16 +60,16 @@ class GalleryInfo {
 
   /// use to hero tag
   final String uuid = Uuid().v4();
-  final String title;
-  final String category;
-  final String time;
-  final double rating;
-  final String url;
-  final String uploader;
-  final int filecount;
-  final String gid;
-  final String token;
-  final String thumb;
+  String title;
+  String category;
+  String time;
+  double rating;
+  String url;
+  String uploader;
+  int filecount;
+  String gid;
+  String token;
+  String thumb;
 
   factory GalleryInfo.fromRawJson(String str) =>
       GalleryInfo.fromJson(json.decode(str));
@@ -101,6 +101,19 @@ class GalleryInfo {
         "token": token,
         "thumb": thumb,
       };
+
+  patchFromJson(Map<String, dynamic> json) {
+    title = json["title"];
+    category = json["category"];
+    time = json["posted"];
+    rating = double.parse(json["rating"]);
+    url = json["url"];
+    uploader = json["uploader"];
+    filecount = json["filecount"];
+    gid = json["gid"].toString();
+    token = json["token"];
+    thumb = json["thumb"];
+  }
 }
 
 class GalleryModel extends ChangeNotifier {

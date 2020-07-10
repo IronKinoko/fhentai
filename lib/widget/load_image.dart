@@ -35,7 +35,11 @@ class LoadImage extends StatelessWidget {
       ),
       fit: BoxFit.fitWidth,
       loadingWidgetBuilder: loadingWidgetBuilder,
-      loadingWidget: loadingWidget ?? Container(),
+      loadingWidget: loadingWidget ??
+          Container(
+            width: width,
+            height: height,
+          ),
       width: width,
       height: height,
     );

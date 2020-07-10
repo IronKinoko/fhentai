@@ -4,9 +4,9 @@ import 'dart:ui' as ui;
 
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
+import 'package:fhentai/widget/load_image.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_advanced_networkimage/provider.dart';
-import 'package:flutter_advanced_networkimage/transition.dart';
 
 class LoadSpritesImage extends StatefulWidget {
   final Page page;
@@ -33,9 +33,16 @@ class _LoadSpritesImageState extends State<LoadSpritesImage> {
   }
 
   Future<void> getImage(String path) async {
-    NetworkImage img =
-        NetworkImage(path, headers: {'Cookie': Global.currentCookieStr});
-    img
+    AdvancedNetworkImage(
+      path,
+      header: {'Cookie': Global.currentCookieStr},
+      retryLimit: 20,
+      retryDuration: Duration(milliseconds: 300),
+      cacheRule: CacheRule(maxAge: const Duration(days: 1)),
+      useDiskCache: true,
+      printError: true,
+      timeoutDuration: Duration(seconds: 20),
+    )
         .resolve(ImageConfiguration())
         .addListener(ImageStreamListener((ImageInfo info, bool _) {
       completer.complete(info.image);

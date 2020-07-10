@@ -1,3 +1,4 @@
+import 'package:fhentai/model/comic_settings_model.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => GalleryModel()),
-        ChangeNotifierProvider(create: (context) => GalleryDetailModel())
+        ChangeNotifierProvider(create: (context) => GalleryDetailModel()),
+        ChangeNotifierProvider(create: (context) => ComicSettingsModel())
       ],
       child: MyApp(),
     ),

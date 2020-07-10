@@ -29,7 +29,6 @@ class _ComicListState extends State<ComicList> {
     GalleryDetailPageState store =
         context.read<GalleryDetailModel>().get(widget.gid);
     initpage = store.readerState.currentIndex;
-    print(initpage);
   }
 
   @override
@@ -72,13 +71,12 @@ class _ComicListState extends State<ComicList> {
                 padding: MediaQuery.of(context).padding,
                 initialScrollIndex: initpage,
                 itemScrollController: _itemScrollController,
-                itemCount:
-                    min(int.parse(store.info.filecount), store.pages.length),
+                itemCount: min(store.info.filecount, store.pages.length),
                 itemPositionsListener: itemPositionsListener,
                 itemBuilder: (context, index) {
                   Page page = store.pages[index];
                   if (store.pages.length == index &&
-                      index < int.parse(store.info.filecount) &&
+                      index < store.info.filecount &&
                       store.readerState.loading) {
                     return Container(
                       height: 200,
@@ -104,7 +102,7 @@ class _ComicListState extends State<ComicList> {
                 child: SafeArea(
                   child: ComicStatusBar(
                     index: store.readerState.currentIndex,
-                    total: int.parse(store.info.filecount),
+                    total: store.info.filecount,
                   ),
                 )),
           ],

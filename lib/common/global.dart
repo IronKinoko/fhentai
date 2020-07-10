@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart' as DioCookieManager;
+import 'package:fhentai/model/comic_settings_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -69,6 +70,11 @@ class Global {
       _cookieJar.saveFromResponse(
           Uri.parse(_prefs.getString(PREFS_DOMAIN)), [cookie]);
     }
+
+    /// 初始化漫画设置
+    if (_prefs.getString(PREFS_COMIC_SETTINGS) == null) {
+      await _prefs.setString(PREFS_COMIC_SETTINGS, ComicSettings().toRawJson());
+    }
   }
 }
 
@@ -82,3 +88,4 @@ const String PREFS_NICKNAME = 'nickName';
 const String PREFS_EMAIL = 'email';
 const String PREFS_HIS_EMAIL = 'his_email';
 const String PREFS_HIS_PASSWORD = 'his_password';
+const String PREFS_COMIC_SETTINGS = 'comic_settings';

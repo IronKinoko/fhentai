@@ -28,7 +28,7 @@ class GalleryDetailModel extends ChangeNotifier {
   }
 
   void checkNeedGetNextPage(GalleryDetailPageState store, int index) async {
-    int filecount = int.parse(store.info.filecount);
+    int filecount = store.info.filecount;
     int pagesLength = store.pages.length;
     if (store.readerState.loading) return;
     if (filecount > pagesLength) {
@@ -36,6 +36,8 @@ class GalleryDetailModel extends ChangeNotifier {
       if (pagesLength - index < 7) {
         try {
           store.readerState.loading = true;
+          notifyListeners();
+
           ++store.readerState.loadedPage;
 
           List<Page> nextPages = await getNextPage(store.info.gid.toString(),
@@ -63,7 +65,7 @@ class GalleryDetailModel extends ChangeNotifier {
       } catch (e) {
         page.loadingBigImg = false;
       }
-      // notifyListeners();
+      notifyListeners();
     }
     return page.bigImageInfo;
   }
@@ -195,7 +197,7 @@ class Info {
   String thumb;
   String uploader;
   String posted;
-  String filecount;
+  int filecount;
   int filesize;
   bool expunged;
   String rating;
@@ -224,7 +226,7 @@ class Info {
         thumb: json["thumb"],
         uploader: json["uploader"],
         posted: json["posted"],
-        filecount: json["filecount"],
+        filecount: int.parse(json["filecount"]),
         filesize: json["filesize"],
         expunged: json["expunged"],
         rating: json["rating"],
@@ -344,7 +346,7 @@ class Page {
 
   String thumb;
 
-  /// 图片地址 用于获取高清图��
+  /// 图片地址 用于获取高清图
   String url;
 
   /// 高清图像链接

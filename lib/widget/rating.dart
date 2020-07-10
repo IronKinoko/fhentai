@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 
 class Rating extends StatelessWidget {
   final double rating;
+  Color color;
 
-  const Rating(
-    this.rating, {
-    Key key,
-  }) : super(key: key);
+  Rating(this.rating, {Key key, this.color}) : super(key: key);
 
   Icon _getIcon(IconData icon) {
     return Icon(
       icon,
-      color: Color(0xfff9a825),
-      size: 16,
+      color: color ?? Color(0xfff9a825),
+      size: 18,
     );
   }
 

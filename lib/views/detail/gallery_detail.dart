@@ -47,9 +47,22 @@ class _GalleryDetailState extends State<GalleryDetail> {
           .fetchGalleryDetail(widget.record.gid, widget.record.token);
       if (mounted)
         setState(() {
+          /// 从评论中链接点进来的 修复未知的参数
+          if (widget.record.title == 'unknow') {
+            widget.record.patchFromJson(res.info.toJson());
+          }
+
+          if (widget.record.uploader == null ||
+              widget.record.uploader.isEmpty) {
+            widget.record.uploader = res.info.uploader;
+          }
+
+          /// 添加历史记录
+          ResponseGalerry.getFromHistories().pushToHistories(widget.record);
           store = res;
         });
     } catch (e) {
+      print(e);
       if (mounted)
         setState(() {
           _error = true;
@@ -61,17 +74,22 @@ class _GalleryDetailState extends State<GalleryDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffold,
+      appBar: AppBar(
+        title: Text(
+          widget.record.title,
+          overflow: TextOverflow.fade,
+        ),
+      ),
+      // extendBodyBehindAppBar: true,
       body: SingleChildScrollView(
         child: SafeArea(
           top: false,
           child: Column(
             children: <Widget>[
-              _Header(
-                record: widget.record,
-              ),
+              _buildHeader(context),
 
               /// button list
-              _buildButtonList(context),
+              // _buildButtonList(context),
 
               _error
                   ? _buildErrorBox(context)
@@ -80,7 +98,6 @@ class _GalleryDetailState extends State<GalleryDetail> {
                       : Column(
                           children: <Widget>[
                             _buildInfo(context),
-                            Divider(height: 0.5),
                             Divider(height: 0.5),
                             _buildTags(context),
                             Divider(height: 0.5),
@@ -147,7 +164,9 @@ class _GalleryDetailState extends State<GalleryDetail> {
           );
         },
       ),
-    );
+    ).then((value) {
+      setState(() {});
+    });
   }
 
   Widget _buildInkWell(int index) {
@@ -166,7 +185,9 @@ class _GalleryDetailState extends State<GalleryDetail> {
   Widget _buildGrid(BuildContext context) {
     int i = 0;
     return Wrap(
-      children: store.pages.sublist(0, min(40, store.pages.length)).map((page) {
+      children: store.pages
+          .sublist(0, min(widget.record.filecount, store.pages.length))
+          .map((page) {
         int k = i++;
 
         if (page.sprites) {
@@ -209,6 +230,8 @@ class _GalleryDetailState extends State<GalleryDetail> {
   }
 
   Widget _buildTags(BuildContext context) {
+    bool isChinese =
+        Localizations.localeOf(context).toLanguageTag().startsWith('zh');
     if (store.tags.length == 0)
       return Container(
         padding: EdgeInsets.symmetric(vertical: 8),
@@ -221,9 +244,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
           return TableRow(children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 13, 16, 8),
-              child: Text(Global.prefs.getString(PREFS_I18N) == 'zh-CN'
-                  ? tag.namespaceChs
-                  : tag.namespace),
+              child: Text(isChinese ? tag.namespaceChs : tag.namespace),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -233,9 +254,8 @@ class _GalleryDetailState extends State<GalleryDetail> {
                 children: <Widget>[
                   ...tag.frontMatters.map((frontMatter) {
                     return TagChip(
-                      label: Text(Global.prefs.getString(PREFS_I18N) == 'zh-CN'
-                          ? frontMatter.nameChs
-                          : frontMatter.name),
+                      label: Text(
+                          isChinese ? frontMatter.nameChs : frontMatter.name),
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -247,7 +267,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
                       },
                       tooltip: frontMatter.intro != null &&
                               frontMatter.intro != '' &&
-                              Global.prefs.getString(PREFS_I18N) == 'zh-CN'
+                              isChinese
                           ? frontMatter.intro
                           : null,
                     );
@@ -271,32 +291,38 @@ class _GalleryDetailState extends State<GalleryDetail> {
 
     return Column(
       children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                I18n.of(context).GComments,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline6
+                    .copyWith(fontSize: 18),
+              ),
+              IconButton(
+                icon: Icon(Icons.chevron_right),
+                color: Theme.of(context).colorScheme.primary,
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GalleryComments(store.comments),
+                      ));
+                },
+              ),
+            ],
+          ),
+        ),
         ...store.comments
             .sublist(0, min(2, store.comments.length))
             .map((comment) => GalleryCommentItem(
                   comment,
                   showAll: false,
                 )),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: FlatButton(
-                  textTheme: ButtonTextTheme.primary,
-                  child: Text(I18n.of(context).More),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => GalleryComments(store.comments),
-                        ));
-                  },
-                ),
-              ),
-            )
-          ],
-        )
       ],
     );
   }
@@ -309,64 +335,90 @@ class _GalleryDetailState extends State<GalleryDetail> {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Expanded(flex: 1, child: Text(store.info.language)),
               Expanded(
-                  flex: 1,
-                  child: Text(
-                    store.info.filecount + 'P',
-                    textAlign: TextAlign.center,
+                  flex: 6,
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        store.info.rating,
+                        style: TextStyle(
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
+                      ),
+                      Rating(
+                        double.parse(store.info.rating),
+                        color: Colors.grey[600],
+                      )
+                    ],
                   )),
               Expanded(
-                  flex: 1,
+                  flex: 4,
                   child: Text(
-                    filesize(store.info.filesize),
-                    textAlign: TextAlign.end,
-                  ))
+                    '${store.info.filecount}P',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                  )),
+              Expanded(
+                flex: 6,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      store.info.language,
+                      style: TextStyle(
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    )
+                  ],
+                ),
+              )
             ],
           ),
-          SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-                flex: 1,
-                child: Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.favorite,
-                      color: Colors.red,
-                    ),
-                    Text(store.info.favcount)
-                  ],
-                ),
-              ),
+                  flex: 6,
+                  child: Row(
+                    children: <Widget>[ColorCategory(store.info.category)],
+                  )),
               Expanded(
-                  flex: 1,
-                  child: Container(
-                      child: Center(
-                          child: Rating(double.parse(store.info.rating))))),
+                  flex: 4,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.favorite,
+                        color: Colors.red[300],
+                        size: 18,
+                      ),
+                      Text(store.info.favcount)
+                    ],
+                  )),
               Expanded(
-                  flex: 1,
-                  child: Text(
-                    store.info.posted,
-                    textAlign: TextAlign.right,
+                  flex: 6,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  GalleryInfoTable(store.info)));
+                        },
+                        padding: EdgeInsets.zero,
+                        color: Theme.of(context).colorScheme.primary,
+                        icon: Icon(Icons.chevron_right),
+                      )
+                    ],
                   ))
             ],
           ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: FlatButton(
-                  textTheme: ButtonTextTheme.primary,
-                  child: Text(I18n.of(context).More),
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => GalleryInfoTable(store.info)));
-                  },
-                ),
-              ),
-            ],
-          )
         ],
       ),
     );
@@ -424,25 +476,6 @@ class _GalleryDetailState extends State<GalleryDetail> {
               ));
             },
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: FlatButton(
-                child: Text(
-                  store != null
-                      ? I18n.of(context).Read
-                      : I18n.of(context).Loading + '...',
-                ),
-                color: Theme.of(context).colorScheme.primary,
-                textColor: Theme.of(context).colorScheme.onPrimary,
-                onPressed: store != null
-                    ? () {
-                        showComic();
-                      }
-                    : null,
-              ),
-            ),
-          )
         ],
       ),
     );
@@ -456,30 +489,11 @@ class _GalleryDetailState extends State<GalleryDetail> {
       ),
     );
   }
-}
 
-class _Header extends StatelessWidget {
-  final double width = 130;
-
-  const _Header({
-    Key key,
-    @required this.record,
-  }) : super(key: key);
-
-  final GalleryInfo record;
-
-  @override
-  Widget build(BuildContext context) {
-    String uploader = context.select<GalleryDetailModel, String>((map) {
-          if (map.get(record.gid) != null) {
-            return map.get(record.gid).info.uploader;
-          }
-          return null;
-        }) ??
-        record.uploader;
-
+  Widget _buildHeader(BuildContext context) {
+    final double width = 120;
     return Container(
-      color: Theme.of(context).colorScheme.primary,
+      // color: Theme.of(context).colorScheme.primary,
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -489,16 +503,21 @@ class _Header extends StatelessWidget {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
-                child: Hero(
-                  tag: record.uuid,
-                  child: Material(
-                    color: Theme.of(context).colorScheme.primary,
-                    child: LoadImage(
-                      record.thumb,
-                      width: width,
-                      height: width * 1.4,
-                    ),
-                  ),
+                child: Container(
+                  width: width,
+                  height: width * 1.4,
+                  child: widget.record.thumb.isNotEmpty
+                      ? Hero(
+                          tag: widget.record.uuid,
+                          child: Material(
+                            child: LoadImage(
+                              widget.record.thumb,
+                              width: width,
+                              height: width * 1.4,
+                            ),
+                          ),
+                        )
+                      : null,
                 ),
               ),
               Expanded(
@@ -508,11 +527,13 @@ class _Header extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        record.title,
-                        maxLines: 4,
+                        widget.record.title,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.headline6.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline6
+                            .copyWith(fontSize: 18),
                       ),
                       SizedBox(height: 8),
                       GestureDetector(
@@ -521,18 +542,44 @@ class _Header extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => SearchResult(
-                                  fSearch: 'uploader:$uploader',
+                                  fSearch: 'uploader:${widget.record.uploader}',
                                 ),
                               ));
                         },
                         child: Text(
-                          uploader,
-                          style: Theme.of(context).textTheme.subtitle1.copyWith(
-                              color: Theme.of(context).colorScheme.onPrimary),
+                          widget.record.uploader,
+                          style: Theme.of(context).textTheme.caption,
                         ),
                       ),
                       Spacer(),
-                      ColorCategory(record.category)
+                      // ColorCategory(widget.record.category),
+                      SizedBox(height: 8),
+                      Row(
+                        children: <Widget>[
+                          FlatButton(
+                            child: Text(
+                              store != null
+                                  ? I18n.of(context).Read
+                                  : I18n.of(context).Loading + '...',
+                            ),
+                            color: Theme.of(context).colorScheme.primary,
+                            textColor: Theme.of(context).colorScheme.onPrimary,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18)),
+                            onPressed: store != null
+                                ? () {
+                                    showComic();
+                                  }
+                                : null,
+                          ),
+                          Spacer(),
+                          IconButton(
+                            onPressed: () {},
+                            color: Theme.of(context).colorScheme.primary,
+                            icon: Icon(Icons.more_vert),
+                          )
+                        ],
+                      ),
                     ],
                   ),
                 ),

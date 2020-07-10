@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:fhentai/widget/load_image.dart';
 import 'package:flutter/material.dart' hide Page;
+import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:flutter_advanced_networkimage/transition.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui' as ui;
 
@@ -14,8 +17,13 @@ class ComicItem extends StatelessWidget {
   const ComicItem({Key key, this.page, this.index}) : super(key: key);
 
   Widget _buildSpritesLoading(BuildContext context, [double progress]) {
+    final double aspectRatio = page.spriteWidth / page.spriteHeight;
+
+    final double width = MediaQuery.of(context).size.width;
+    final double height = width / aspectRatio;
     return Container(
-        height: MediaQuery.of(context).size.height * 0.55,
+        width: width,
+        height: height,
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
@@ -46,6 +54,10 @@ class ComicItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double aspectRatio = page.spriteWidth / page.spriteHeight;
+
+    final double width = MediaQuery.of(context).size.width;
+    final double height = width / aspectRatio;
     return FutureBuilder<BigImageInfo>(
         future: context
             .watch<GalleryDetailModel>()
@@ -54,7 +66,24 @@ class ComicItem extends StatelessWidget {
           BigImageInfo bigImageInfo = snapshot.data;
           return bigImageInfo?.imageurl == null
               ? _buildLoading(context)
-              : CustomComicImageLoader(bigImageInfo, index);
+              : TransitionToImage(
+                  image: AdvancedNetworkImage(
+                    bigImageInfo.imageurl,
+                    header: {'Cookie': Global.currentCookieStr},
+                    retryLimit: 20,
+                    retryDuration: Duration(milliseconds: 300),
+                    cacheRule: CacheRule(maxAge: const Duration(days: 1)),
+                    useDiskCache: true,
+                    printError: true,
+                    timeoutDuration: Duration(seconds: 20),
+                  ),
+                  fit: BoxFit.fitWidth,
+                  loadingWidgetBuilder: (context, progress, imageData) =>
+                      _buildSpritesLoading(context, progress),
+                  width: width,
+                  height: height,
+                );
+          // : CustomComicImageLoader(bigImageInfo, index);
         });
   }
 }
@@ -158,13 +187,24 @@ class CustomImagePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawImageRect(
-        image,
-        Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
-        Offset(0, 0) & size,
-        Paint());
+    Size imgSize = Size(image.width.toDouble(), image.height.toDouble());
+    Rect dstRect = Rect.fromLTWH(0, 0, size.width, size.height);
+
+    /// 根据适配模式，计算适合的缩放尺寸
+    FittedSizes fittedSizes =
+        applyBoxFit(BoxFit.fitWidth, imgSize, dstRect.size);
+
+    /// 获得一个图片区域中，指定大小的，居中位置处的 Rect
+    Rect inputRect =
+        Alignment.center.inscribe(fittedSizes.source, Offset.zero & imgSize);
+
+    /// 获得一个绘制区域内，指定大小的，居中位置处的 Rect
+    Rect outputRect =
+        Alignment.center.inscribe(fittedSizes.destination, dstRect);
+
+    canvas.drawImageRect(image, inputRect, outputRect, Paint());
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }

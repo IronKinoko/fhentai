@@ -9,7 +9,7 @@ class GalleryInfoTable extends StatelessWidget {
 
   GalleryInfoTable(this.info);
 
-  List<Map<String, String>> _buildList(BuildContext context) {
+  List<Map<String, dynamic>> _buildList(BuildContext context) {
     return [
       {"key": I18n.of(context).GGallery_InfoGid, "value": '${info.gid}'},
       {"key": I18n.of(context).GGallery_InfoToken, "value": info.token},
@@ -87,7 +87,7 @@ class GalleryInfoTable extends StatelessWidget {
                               ? Row(
                                   children: <Widget>[ColorCategory(o['value'])],
                                 )
-                              : Text(o['value']),
+                              : Text('${o['value']}'),
                         ),
                       ]);
                 })

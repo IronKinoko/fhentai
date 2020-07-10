@@ -34,7 +34,6 @@ class GalleryCard extends StatelessWidget {
       child: Material(
         child: InkWell(
           onTap: () {
-            ResponseGalerry.getFromHistories().pushToHistories(record);
             Navigator.push(
                 context,
                 MaterialPageRoute(
