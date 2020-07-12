@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/views/search/search_result.dart';

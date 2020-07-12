@@ -1,4 +1,3 @@
-import 'package:fhentai/common/global.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/views/gallery.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:fhentai/common/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';

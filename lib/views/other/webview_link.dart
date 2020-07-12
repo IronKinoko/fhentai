@@ -1,4 +1,3 @@
-import 'package:fhentai/common/global.dart';
 import 'package:fhentai/widget/eh_webview.dart';
 import 'package:flutter/material.dart';
 

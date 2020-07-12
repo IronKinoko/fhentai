@@ -1,7 +1,4 @@
-import 'package:fhentai/model/gallery_detail_model.dart';
-import 'package:fhentai/views/comic/comic_list.dart';
 import 'package:flutter/material.dart' hide Page;
-import 'package:provider/provider.dart';
 
 import 'comic_list_horizontal.dart';
 

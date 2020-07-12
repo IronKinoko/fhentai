@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:fhentai/common/global.dart';
@@ -8,12 +7,10 @@ import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/views/comic/comic_reader.dart';
 import 'package:fhentai/views/detail/gallery_torrent.dart';
-import 'package:fhentai/views/gallery.dart';
 import 'package:fhentai/views/search/search_result.dart';
-import 'package:fhentai/widget/load_image.dart';
 import 'package:fhentai/widget/index.dart';
+import 'package:fhentai/widget/load_image.dart';
 import 'package:fhentai/widget/load_sprites_image.dart';
-import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

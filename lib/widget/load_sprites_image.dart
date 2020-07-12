@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
-import 'package:fhentai/widget/load_image.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_advanced_networkimage/provider.dart';
 

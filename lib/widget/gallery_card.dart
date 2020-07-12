@@ -1,6 +1,3 @@
-import 'package:animations/animations.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/views/detail/gallery_detail.dart';
 import 'package:fhentai/widget/index.dart';

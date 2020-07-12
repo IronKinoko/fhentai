@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:fhentai/common/DB.dart';
@@ -164,7 +163,7 @@ List<Tag> parseDetailPageTagList(String html) {
 OtherInfo parseDetailPageOtherInfo(String html) {
   Document document = HtmlParser(html, encoding: 'utf-8').parse();
 
-  final String rating_count = document.getElementById('rating_count').text;
+  final String ratingCount = document.getElementById('rating_count').text;
 
   String favoritelink = document.getElementById('favoritelink').text;
   if (favoritelink.contains('Add to Favorites')) favoritelink = '';
@@ -182,7 +181,7 @@ OtherInfo parseDetailPageOtherInfo(String html) {
     }
   });
   return OtherInfo(
-    ratingCount: rating_count,
+    ratingCount: ratingCount,
     favcount: favcount,
     favoritelink: favoritelink,
     language: language,

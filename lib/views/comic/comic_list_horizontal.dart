@@ -1,12 +1,10 @@
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fhentai/model/comic_settings_model.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:fhentai/views/comic/comic_item.dart';
 import 'package:fhentai/views/comic/comic_statusbar.dart';
 import 'package:flutter/material.dart' hide Page;
-import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 

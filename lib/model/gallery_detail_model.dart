@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:fhentai/apis/gallery.dart';
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 class GalleryDetailModel extends ChangeNotifier {

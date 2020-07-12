@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Rating extends StatelessWidget {
   final double rating;
-  Color color;
+  final Color color;
 
   Rating(this.rating, {Key key, this.color}) : super(key: key);
 

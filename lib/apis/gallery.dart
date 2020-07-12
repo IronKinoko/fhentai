@@ -2,9 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:fhentai/model/gallery_model.dart';
+import 'package:fhentai/views/gallery.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
-import 'package:fhentai/views/gallery.dart';
+
 import './parser/gallery_parser.dart';
 
 Future<ResponseGalerry> galleryList({int page, String fSearch = ''}) async {
