@@ -4,6 +4,7 @@ import 'package:fhentai/common/global.dart';
 import 'package:fhentai/cus_icons.dart';
 import 'package:fhentai/generated/i18n.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
+import 'package:fhentai/model/gallery_favorites_model.dart';
 import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/views/comic/comic_reader.dart';
 import 'package:fhentai/views/detail/gallery_torrent.dart';
@@ -11,6 +12,7 @@ import 'package:fhentai/views/search/search_result.dart';
 import 'package:fhentai/widget/index.dart';
 import 'package:fhentai/widget/load_image.dart';
 import 'package:fhentai/widget/load_sprites_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +44,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
       GalleryDetailPageState res = await context
           .read<GalleryDetailModel>()
           .fetchGalleryDetail(widget.record.gid, widget.record.token);
+      await context.read<FavoritesModel>().getRemoteInfo();
       if (mounted)
         setState(() {
           /// 从评论中链接点进来的 修复未知的参数
@@ -489,6 +492,11 @@ class _GalleryDetailState extends State<GalleryDetail> {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final String favoritelink =
+        context.select<GalleryDetailModel, String>((map) {
+      final GalleryDetailPageState store = map.get(widget.record.gid);
+      return store == null ? null : store.info.favoritelink;
+    });
     final double width = 120;
     return Container(
       // color: Theme.of(context).colorScheme.primary,
@@ -571,10 +579,33 @@ class _GalleryDetailState extends State<GalleryDetail> {
                                 : null,
                           ),
                           Spacer(),
-                          IconButton(
-                            onPressed: () {},
-                            color: Theme.of(context).colorScheme.primary,
-                            icon: Icon(Icons.more_vert),
+                          Visibility(
+                            visible: store != null && Global.isSignin,
+                            child: IconButton(
+                              icon: Icon(favoritelink != null
+                                  ? Icons.favorite
+                                  : Icons.favorite_border),
+                              color: Theme.of(context).colorScheme.primary,
+                              tooltip: favoritelink != null
+                                  ? favoritelink
+                                  : I18n.of(context).GFavoriteAdd,
+                              onPressed: store == null
+                                  ? null
+                                  : () {
+                                      _handleFavoriteAction(context);
+                                    },
+                            ),
+                          ),
+                          Builder(
+                            builder: (context) => IconButton(
+                              onPressed: store == null
+                                  ? null
+                                  : () {
+                                      _showMoreAction(context);
+                                    },
+                              color: Theme.of(context).colorScheme.primary,
+                              icon: Icon(Icons.more_vert),
+                            ),
                           )
                         ],
                       ),
@@ -585,6 +616,83 @@ class _GalleryDetailState extends State<GalleryDetail> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _handleFavoriteAction(BuildContext context) async {
+    if (store == null) return;
+    if (store.info.favoritelink != null) {
+      /// 删除收藏
+      await context.read<FavoritesModel>().removeFavorites(
+          store.info.gid, store.info.token, store.info.favoritelink);
+      context
+          .read<GalleryDetailModel>()
+          .updateInfoFavLink(store.info.gid.toString());
+    } else {
+      final List<String> res = await showCupertinoModalPopup(
+          context: context,
+          builder: (context) => CupertinoActionSheet(
+                actions: <Widget>[
+                  ...Provider.of<FavoritesModel>(context, listen: false)
+                      .list
+                      .sublist(1)
+                      .map((e) => CupertinoActionSheetAction(
+                            child: Text('${e.favName} (${e.count})'),
+                            onPressed: () {
+                              Navigator.pop(context, [e.favIndex, e.favName]);
+                            },
+                          ))
+                      .toList()
+                ],
+              ));
+      if (res != null) {
+        await context
+            .read<FavoritesModel>()
+            .addFavorites(store.info.gid, store.info.token, res[0]);
+
+        context
+            .read<GalleryDetailModel>()
+            .updateInfoFavLink(store.info.gid.toString(), res[1]);
+      }
+    }
+  }
+
+  void _showMoreAction(BuildContext context) {
+    showCupertinoModalPopup(
+      context: _scaffold.currentContext,
+      builder: (context) => CupertinoActionSheet(
+        cancelButton: CupertinoActionSheetAction(
+          child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            onPressed: () {},
+            child: Text(I18n.of(context).Download),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        GalleryTorrentList(store.info.torrents),
+                  ));
+            },
+            child: Text('Torrent(${store.info.torrentcount})'),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: store.info.url));
+              Navigator.pop(context);
+            },
+            child: Text(MaterialLocalizations.of(context).copyButtonLabel),
+          ),
+        ],
       ),
     );
   }

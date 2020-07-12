@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fhentai/common/global.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
+import 'package:fhentai/model/gallery_favorites_model.dart';
 import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/views/gallery.dart';
 import 'package:flutter/foundation.dart';
@@ -140,6 +141,29 @@ Future<List<Info>> _gdata(List<List<String>> gidlist) async {
   }).reduce((prev, next) => [...prev, ...next]);
 
   return res;
+}
+
+/// [html] 是 favorites 页面的html
+Future<List<FavoritesInfo>> getFevoritesInfo([String html]) async {
+  if (html == null) {
+    Response res = await Global.dio.get('/favorites.php');
+    html = res.data;
+  }
+  List<FavoritesInfo> list = parseFavoritesSettingInfo(html);
+  return list;
+}
+
+/// [favcat] 可以是 0～9 和 'favdel'
+Future<void> updateFavorite(int gid, String token, String favcat) async {
+  await Global.dio.request(
+    '/gallerypopups.php',
+    options: RequestOptions(
+      method: 'POST',
+      contentType: Headers.formUrlEncodedContentType,
+      data: {'favcat': favcat, 'favnote': '', 'update': 1},
+      queryParameters: {'gid': gid, 't': token, "act": 'addfav'},
+    ),
+  );
 }
 
 List _chunk({@required List array, @required int size}) {

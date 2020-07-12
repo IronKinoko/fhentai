@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fhentai/common/DB.dart';
 import 'package:fhentai/model/db_model.dart';
 import 'package:fhentai/model/gallery_detail_model.dart';
+import 'package:fhentai/model/gallery_favorites_model.dart';
 import 'package:fhentai/model/gallery_model.dart';
 import 'package:fhentai/views/gallery.dart';
 import 'package:html/dom.dart' hide Comment;
@@ -166,7 +167,7 @@ OtherInfo parseDetailPageOtherInfo(String html) {
   final String ratingCount = document.getElementById('rating_count').text;
 
   String favoritelink = document.getElementById('favoritelink').text;
-  if (favoritelink.contains('Add to Favorites')) favoritelink = '';
+  if (favoritelink.contains('Add to Favorites')) favoritelink = null;
 
   final String favcount = document
       .getElementById('favcount')
@@ -292,4 +293,23 @@ List<Tag> translated(List<Tag> tagList) {
     row.description = namespace.frontMatters.description;
   });
   return tagList;
+}
+
+List<FavoritesInfo> parseFavoritesSettingInfo(String html) {
+  Document document = HtmlParser(html, encoding: 'utf-8').parse();
+
+  List<Element> lists = document.querySelectorAll('.nosel [class=fp]');
+
+  int total = int.parse(
+      document.querySelector('p.ip').text.replaceAll(RegExp(r'[^0-9]'), ''));
+  int i = 0;
+  List<FavoritesInfo> res = lists.map((favNode) {
+    int count = int.parse(favNode.children[0].text);
+    String favName = favNode.children[2].text;
+    return FavoritesInfo(
+        count: count, favIndex: (i++).toString(), favName: favName);
+  }).toList();
+
+  res.insert(0, FavoritesInfo(count: total, favName: 'All', favIndex: 'all'));
+  return res;
 }

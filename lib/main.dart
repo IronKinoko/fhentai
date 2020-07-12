@@ -1,5 +1,3 @@
-import 'package:fhentai/model/comic_settings_model.dart';
-import 'package:fhentai/model/gallery_detail_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,6 +6,9 @@ import 'package:provider/provider.dart';
 import 'common/DB.dart';
 import 'common/global.dart';
 import 'generated/i18n.dart';
+import 'model/comic_settings_model.dart';
+import 'model/gallery_detail_model.dart';
+import 'model/gallery_favorites_model.dart';
 import 'model/gallery_model.dart';
 import 'views/gallery.dart';
 import 'views/login.dart';
@@ -19,9 +20,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => GalleryModel()),
+        ChangeNotifierProvider(create: (context) => GalleryModel()),
         ChangeNotifierProvider(create: (context) => GalleryDetailModel()),
-        ChangeNotifierProvider(create: (context) => ComicSettingsModel())
+        ChangeNotifierProvider(create: (context) => ComicSettingsModel()),
+        ChangeNotifierProvider(create: (context) => FavoritesModel(context)),
       ],
       child: MyApp(),
     ),
@@ -45,7 +47,7 @@ class _MyAppState extends State<MyApp> {
     loadConfig();
   }
 
-  void loadConfig() async {
+  void loadConfig() {
     String value = Global.prefs.getString(PREFS_I18N);
 
     setState(() {
@@ -105,12 +107,8 @@ class _MyAppState extends State<MyApp> {
           ? Global.isSignin == null ? Login() : Gallery()
           : Container(
               child: Center(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  CircularProgressIndicator(),
-                ],
-              )),
+                child: CircularProgressIndicator(),
+              ),
             ),
     );
   }

@@ -12,7 +12,6 @@ class GalleryDetailModel extends ChangeNotifier {
 
   void add(String gid, GalleryDetailPageState state) {
     _galleryMap[gid] = state;
-    notifyListeners();
   }
 
   void clear() {
@@ -36,8 +35,6 @@ class GalleryDetailModel extends ChangeNotifier {
       if (pagesLength - index < 7) {
         try {
           store.readerState.loading = true;
-          notifyListeners();
-
           ++store.readerState.loadedPage;
 
           List<Page> nextPages = await getNextPage(store.info.gid.toString(),
@@ -78,8 +75,12 @@ class GalleryDetailModel extends ChangeNotifier {
       res = await galleryDetail(gid, token);
       add(gid, res);
     }
-    notifyListeners();
     return res;
+  }
+
+  void updateInfoFavLink(String gid, [String favoritelink]) {
+    get(gid).info.favoritelink = favoritelink;
+    notifyListeners();
   }
 }
 
