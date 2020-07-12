@@ -62,7 +62,7 @@ class GalleryDetailModel extends ChangeNotifier {
       } catch (e) {
         page.loadingBigImg = false;
       }
-      notifyListeners();
+      // notifyListeners();
     }
     return page.bigImageInfo;
   }
