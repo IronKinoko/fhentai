@@ -17,28 +17,21 @@ class ComicItem extends StatelessWidget {
   const ComicItem({Key key, this.page, this.index}) : super(key: key);
 
   Widget _buildSpritesLoading(BuildContext context, [double progress]) {
-    final double aspectRatio = page.spriteWidth / page.spriteHeight;
-
-    final double width = MediaQuery.of(context).size.width;
-    final double height = width / aspectRatio;
-    return Container(
-        width: width,
-        height: height,
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            CircularProgressIndicator(
-              value: progress,
-            ),
-            Text(
-              '${index + 1}',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6
-                  .copyWith(color: Colors.white),
-            )
-          ],
-        ));
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        CircularProgressIndicator(
+          value: progress,
+        ),
+        Text(
+          '${index + 1}',
+          style: Theme.of(context)
+              .textTheme
+              .headline6
+              .copyWith(color: Colors.white),
+        )
+      ],
+    );
   }
 
   Widget _buildLoading(BuildContext context) {
@@ -58,33 +51,36 @@ class ComicItem extends StatelessWidget {
 
     final double width = MediaQuery.of(context).size.width;
     final double height = width / aspectRatio;
-    return FutureBuilder<BigImageInfo>(
-        future: context
-            .watch<GalleryDetailModel>()
-            .getRemoteHighQualityImageUrl(page, index),
-        builder: (context, snapshot) {
-          BigImageInfo bigImageInfo = snapshot.data;
-          return bigImageInfo?.imageurl == null
-              ? _buildLoading(context)
-              : TransitionToImage(
-                  image: AdvancedNetworkImage(
-                    bigImageInfo.imageurl,
-                    header: {'Cookie': Global.currentCookieStr},
-                    retryLimit: 20,
-                    retryDuration: Duration(milliseconds: 300),
-                    cacheRule: CacheRule(maxAge: const Duration(days: 1)),
-                    useDiskCache: true,
-                    printError: true,
-                    timeoutDuration: Duration(seconds: 20),
-                  ),
-                  fit: BoxFit.fitWidth,
-                  loadingWidgetBuilder: (context, progress, imageData) =>
-                      _buildSpritesLoading(context, progress),
-                  width: width,
-                  height: height,
-                );
-          // : CustomComicImageLoader(bigImageInfo, index);
-        });
+    return Container(
+      width: width,
+      height: height,
+      child: FutureBuilder<BigImageInfo>(
+          future: context
+              .watch<GalleryDetailModel>()
+              .getRemoteHighQualityImageUrl(page, index),
+          builder: (context, snapshot) {
+            BigImageInfo bigImageInfo = snapshot.data;
+            return bigImageInfo?.imageurl == null
+                ? _buildLoading(context)
+                : TransitionToImage(
+                    image: AdvancedNetworkImage(
+                      bigImageInfo.imageurl,
+                      header: {'Cookie': Global.currentCookieStr},
+                      retryLimit: 20,
+                      retryDuration: Duration(milliseconds: 300),
+                      cacheRule: CacheRule(maxAge: const Duration(days: 1)),
+                      useDiskCache: true,
+                      printError: true,
+                      timeoutDuration: Duration(seconds: 20),
+                    ),
+                    // fit: BoxFit.none,
+                    loadingWidget: _buildSpritesLoading(context),
+                    width: width,
+                    height: height,
+                  );
+            // : CustomComicImageLoader(bigImageInfo, index);
+          }),
+    );
   }
 }
 

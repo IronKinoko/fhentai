@@ -50,7 +50,11 @@ class GalleryCard extends StatelessWidget {
                     child: SizedBox(
                       width: _weight,
                       height: _height,
-                      child: LoadImage(record.thumb),
+                      child: LoadImage(
+                        record.thumb,
+                        width: _weight,
+                        height: _height,
+                      ),
                     ),
                   ),
                 ),

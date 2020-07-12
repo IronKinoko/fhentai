@@ -89,3 +89,4 @@ const String PREFS_EMAIL = 'email';
 const String PREFS_HIS_EMAIL = 'his_email';
 const String PREFS_HIS_PASSWORD = 'his_password';
 const String PREFS_COMIC_SETTINGS = 'comic_settings';
+const String PREFS_SUGGESTIONS = 'suggestions';
