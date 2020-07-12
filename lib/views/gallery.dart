@@ -29,6 +29,7 @@ class GalleryList extends StatefulWidget {
 
 class _GalleryListState extends State<GalleryList> {
   List<GalleryInfo> _dataSource;
+  // ignore: unused_field
   int _total = 0;
   int _page = 0;
   bool _isEnd = false;

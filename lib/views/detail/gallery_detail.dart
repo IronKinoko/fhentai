@@ -421,6 +421,7 @@ class _GalleryDetailState extends State<GalleryDetail> {
     );
   }
 
+  // ignore: unused_element
   Padding _buildButtonList(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0),
